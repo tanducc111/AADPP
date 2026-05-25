@@ -50,6 +50,22 @@ class ForbiddenAccessError(AppException):
         )
 
 
+class ResourceNotFoundError(AppException):
+    def __init__(self, resource_name: str = "Resource") -> None:
+        super().__init__(
+            message=f"{resource_name} was not found.",
+            status_code=HTTPStatus.NOT_FOUND,
+        )
+
+
+class ResourceConflictError(AppException):
+    def __init__(self, message: str) -> None:
+        super().__init__(
+            message=message,
+            status_code=HTTPStatus.CONFLICT,
+        )
+
+
 async def app_exception_handler(request: Request, exception: AppException) -> JSONResponse:
     return JSONResponse(
         status_code=exception.status_code,

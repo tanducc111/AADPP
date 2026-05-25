@@ -57,7 +57,9 @@ export function AppSidebar({ isMobileOpen, navigationItems, onClose }: AppSideba
         <nav className="flex-1 space-y-1 px-3 py-4">
           {navigationItems.map((navigationItem) => {
             const NavigationIcon = navigationItem.icon;
-            const isActive = pathname === navigationItem.href;
+            const isActive =
+              pathname === navigationItem.href ||
+              (navigationItem.href !== "/" && pathname.startsWith(`${navigationItem.href}/`));
 
             return (
               <Link

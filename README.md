@@ -1,6 +1,6 @@
 # AADPP
 
-AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
+AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, client company management, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
 
 OCR and accounting business workflows are intentionally not implemented yet.
 
@@ -110,8 +110,9 @@ AADPP/
 - Frontend state is organized through provider boundaries for auth, global loading, and toast notifications.
 - API access is centralized through a typed Axios client.
 - Google SSO exchanges a frontend Google ID token for a backend-issued JWT.
+- Client company management is available at `/clients` with ADMIN CRUD and ACCOUNTANT read-only access to active companies.
 - Protected frontend routes load the current user from `/api/v1/auth/me`.
 - Backend configuration is loaded from environment variables with Pydantic Settings.
 - SQLAlchemy models use UUID primary keys, timezone-aware timestamps, enums, relationships, and indexes on searchable fields.
-- Alembic is configured with migrations for the core accounting document schema and Google SSO user fields.
+- Alembic is configured with migrations for the core accounting document schema, Google SSO user fields, and client company management fields.
 - JWT and RBAC are implemented as reusable backend dependencies.

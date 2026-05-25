@@ -43,6 +43,15 @@ Initial database models:
 
 All primary keys are UUIDs. All models include `created_at` and `updated_at` with timezone-aware database timestamps. Document and user classification values are represented with enums.
 
+## Client Companies
+
+Client company management is the business anchor for future document uploads. Backend access is enforced by role:
+
+- `ADMIN`: create, update, delete, activate, deactivate, and view all client companies
+- `ACCOUNTANT`: view and search active client companies only
+
+The API exposes paginated search and filtering through `/api/v1/client-companies`. The frontend module lives under `/clients`.
+
 ## Security Foundation
 
 Secrets are read from environment variables. Google ID tokens are verified server-side with the official Google auth library, then exchanged for backend JWT access tokens. The API exposes `/api/v1/auth/google`, `/api/v1/auth/me`, and `/api/v1/auth/logout`.

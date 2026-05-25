@@ -13,12 +13,21 @@ import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import { loginWithGoogleIdToken } from "@/services/authService";
 
+function isConfiguredGoogleClientId(googleClientId: string | undefined) {
+  return Boolean(
+    googleClientId &&
+      googleClientId.endsWith(".apps.googleusercontent.com") &&
+      !googleClientId.startsWith("replace-with-"),
+  );
+}
+
 export function LoginCard() {
   const router = useRouter();
   const { signIn } = useAuth();
   const [loginErrorMessage, setLoginErrorMessage] = useState<string | null>(null);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const isGoogleOAuthConfigured = isConfiguredGoogleClientId(googleClientId);
 
   async function handleGoogleLoginSuccess(credentialResponse: CredentialResponse) {
     setLoginErrorMessage(null);
@@ -66,9 +75,9 @@ export function LoginCard() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!googleClientId ? (
+          {!isGoogleOAuthConfigured ? (
             <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              Google OAuth is not configured. Set NEXT_PUBLIC_GOOGLE_CLIENT_ID.
+              Google OAuth is not configured. Set a real NEXT_PUBLIC_GOOGLE_CLIENT_ID.
             </div>
           ) : null}
 
@@ -77,6 +86,10 @@ export function LoginCard() {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                 Signing in...
+              </div>
+            ) : !isGoogleOAuthConfigured ? (
+              <div className="rounded-md border border-border bg-muted px-4 py-2 text-sm text-muted-foreground">
+                Google sign-in is waiting for OAuth configuration.
               </div>
             ) : (
               <GoogleLogin

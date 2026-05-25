@@ -7,7 +7,7 @@ export const ROUTES = {
   login: "/login",
   dashboard: "/dashboard",
   documents: "/documents",
-  clientCompanies: "/client-companies",
+  clientCompanies: "/clients",
   users: "/users",
   activityLogs: "/activity-logs",
   admin: "/admin",
