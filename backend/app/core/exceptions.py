@@ -26,6 +26,22 @@ class InvalidCredentialsError(AppException):
         )
 
 
+class GoogleAuthenticationError(AppException):
+    def __init__(self, message: str = "Google login could not be verified.") -> None:
+        super().__init__(
+            message=message,
+            status_code=HTTPStatus.UNAUTHORIZED,
+        )
+
+
+class AccountAccessBlockedError(AppException):
+    def __init__(self) -> None:
+        super().__init__(
+            message="User account is inactive or locked.",
+            status_code=HTTPStatus.FORBIDDEN,
+        )
+
+
 class ForbiddenAccessError(AppException):
     def __init__(self) -> None:
         super().__init__(
@@ -59,6 +75,18 @@ async def validation_exception_handler(
     )
 
 
+async def unhandled_exception_handler(request: Request, exception: Exception) -> JSONResponse:
+    return JSONResponse(
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        content={
+            "message": "An unexpected server error occurred.",
+            "details": {},
+            "path": str(request.url.path),
+        },
+    )
+
+
 def register_exception_handlers(application: FastAPI) -> None:
     application.add_exception_handler(AppException, app_exception_handler)
     application.add_exception_handler(RequestValidationError, validation_exception_handler)
+    application.add_exception_handler(Exception, unhandled_exception_handler)

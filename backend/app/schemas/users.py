@@ -12,7 +12,11 @@ class UserRead(BaseModel):
     id: uuid.UUID
     email: EmailStr
     full_name: str
+    avatar_url: str | None
+    google_id: str | None
     role: UserRole
     is_active: bool
+    is_locked: bool
+    last_login_at: datetime | None
     created_at: datetime
     updated_at: datetime

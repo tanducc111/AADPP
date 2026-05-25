@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,11 +9,17 @@ class Settings(BaseSettings):
     environment: str = Field(default="development", validation_alias="ENVIRONMENT")
     api_v1_prefix: str = Field(default="/api/v1", validation_alias="API_V1_PREFIX")
     database_url: str = Field(validation_alias="DATABASE_URL")
-    secret_key: str = Field(validation_alias="SECRET_KEY")
+    google_client_id: str = Field(validation_alias="GOOGLE_CLIENT_ID")
+    jwt_secret_key: str = Field(
+        validation_alias=AliasChoices("JWT_SECRET_KEY", "SECRET_KEY"),
+    )
     jwt_algorithm: str = Field(default="HS256", validation_alias="JWT_ALGORITHM")
-    access_token_expire_minutes: int = Field(
+    jwt_access_token_expire_minutes: int = Field(
         default=60,
-        validation_alias="ACCESS_TOKEN_EXPIRE_MINUTES",
+        validation_alias=AliasChoices(
+            "JWT_ACCESS_TOKEN_EXPIRE_MINUTES",
+            "ACCESS_TOKEN_EXPIRE_MINUTES",
+        ),
     )
     cors_origins: str = Field(
         default="http://localhost:3000",

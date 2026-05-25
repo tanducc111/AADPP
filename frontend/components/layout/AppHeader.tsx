@@ -1,9 +1,11 @@
 "use client";
 
-import { Bell, Loader2, Menu, Search } from "lucide-react";
+import { Bell, Loader2, LogOut, Menu, Search } from "lucide-react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import { useGlobalLoading } from "@/hooks/useGlobalLoading";
 
 type AppHeaderProps = {
@@ -11,6 +13,7 @@ type AppHeaderProps = {
 };
 
 export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
+  const { currentUser, signOut } = useAuth();
   const { isGlobalLoading } = useGlobalLoading();
 
   return (
@@ -49,6 +52,47 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
       >
         <Bell className="h-4 w-4" aria-hidden="true" />
       </Button>
+
+      {currentUser ? (
+        <div className="hidden items-center gap-3 border-l border-border pl-3 md:flex">
+          <div className="flex items-center gap-2">
+            {currentUser.avatarUrl ? (
+              <span
+                aria-label={currentUser.fullName}
+                className="h-9 w-9 rounded-md border border-border object-cover"
+                role="img"
+                style={{
+                  backgroundImage: `url(${currentUser.avatarUrl})`,
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                }}
+              />
+            ) : (
+              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">
+                {currentUser.fullName.slice(0, 1).toUpperCase()}
+              </span>
+            )}
+            <span className="min-w-0">
+              <span className="block max-w-40 truncate text-sm font-medium text-foreground">
+                {currentUser.fullName}
+              </span>
+              <span className="block text-xs text-muted-foreground">{currentUser.email}</span>
+            </span>
+          </div>
+          <Badge variant="outline">{currentUser.role}</Badge>
+          <Button
+            aria-label="Log out"
+            onClick={() => {
+              void signOut();
+            }}
+            size="icon"
+            type="button"
+            variant="ghost"
+          >
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+          </Button>
+        </div>
+      ) : null}
     </header>
   );
 }

@@ -1,13 +1,13 @@
 # AADPP
 
-AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains the initial full-stack architecture foundation only: a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, JWT/RBAC scaffolding, and Docker-ready local services.
+AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
 
 OCR and accounting business workflows are intentionally not implemented yet.
 
 ## Tech Stack
 
-- Frontend: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui-style components, lucide-react, Axios, react-hook-form, Zod
-- Backend: FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL, JWT utilities
+- Frontend: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui-style components, lucide-react, Axios, react-hook-form, Zod, Google OAuth
+- Backend: FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL, JWT utilities, Google token verification
 - DevOps: Docker, Docker Compose, environment-based configuration
 
 ## Local Setup
@@ -21,6 +21,13 @@ npm run dev
 ```
 
 Frontend runs at [http://localhost:3000](http://localhost:3000).
+
+Required frontend environment variables:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+```
 
 ### Backend
 
@@ -44,6 +51,15 @@ Run database migrations:
 
 ```bash
 alembic upgrade head
+```
+
+Required backend environment variables:
+
+```bash
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+JWT_SECRET_KEY=replace-with-a-secure-random-secret
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
 ```
 
 ### Docker Compose
@@ -93,7 +109,9 @@ AADPP/
 
 - Frontend state is organized through provider boundaries for auth, global loading, and toast notifications.
 - API access is centralized through a typed Axios client.
+- Google SSO exchanges a frontend Google ID token for a backend-issued JWT.
+- Protected frontend routes load the current user from `/api/v1/auth/me`.
 - Backend configuration is loaded from environment variables with Pydantic Settings.
 - SQLAlchemy models use UUID primary keys, timezone-aware timestamps, enums, relationships, and indexes on searchable fields.
-- Alembic is configured with an initial migration for the core accounting document schema.
-- JWT and RBAC are prepared as reusable utilities without implementing authentication business workflows yet.
+- Alembic is configured with migrations for the core accounting document schema and Google SSO user fields.
+- JWT and RBAC are implemented as reusable backend dependencies.

@@ -2,6 +2,7 @@
 
 import { FileText, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -14,6 +15,8 @@ type AppSidebarProps = {
 };
 
 export function AppSidebar({ isMobileOpen, navigationItems, onClose }: AppSidebarProps) {
+  const pathname = usePathname();
+
   return (
     <>
       <div
@@ -54,12 +57,13 @@ export function AppSidebar({ isMobileOpen, navigationItems, onClose }: AppSideba
         <nav className="flex-1 space-y-1 px-3 py-4">
           {navigationItems.map((navigationItem) => {
             const NavigationIcon = navigationItem.icon;
+            const isActive = pathname === navigationItem.href;
 
             return (
               <Link
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                  navigationItem.isActive
+                  isActive
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}

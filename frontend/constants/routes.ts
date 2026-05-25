@@ -1,15 +1,16 @@
-import { Activity, Building2, FileText, LayoutDashboard, Settings, Users } from "lucide-react";
+import { Activity, Building2, FileText, LayoutDashboard, Settings, ShieldCheck, Users } from "lucide-react";
 
 import type { NavigationItem } from "@/types/navigation";
 
 export const ROUTES = {
   home: "/",
   login: "/login",
-  dashboard: "/",
+  dashboard: "/dashboard",
   documents: "/documents",
   clientCompanies: "/client-companies",
   users: "/users",
   activityLogs: "/activity-logs",
+  admin: "/admin",
   settings: "/settings",
 } as const;
 
@@ -18,7 +19,6 @@ export const DASHBOARD_NAVIGATION_ITEMS: NavigationItem[] = [
     label: "Dashboard",
     href: ROUTES.dashboard,
     icon: LayoutDashboard,
-    isActive: true,
   },
   {
     label: "Documents",
@@ -34,6 +34,11 @@ export const DASHBOARD_NAVIGATION_ITEMS: NavigationItem[] = [
     label: "Users",
     href: ROUTES.users,
     icon: Users,
+  },
+  {
+    label: "Admin",
+    href: ROUTES.admin,
+    icon: ShieldCheck,
   },
   {
     label: "Activity Logs",
