@@ -1,0 +1,24 @@
+from enum import Enum
+
+
+class UserRole(str, Enum):
+    ADMIN = "ADMIN"
+    ACCOUNTANT = "ACCOUNTANT"
+
+
+class DocumentType(str, Enum):
+    VAT_INVOICE = "VAT_INVOICE"
+    RECEIPT = "RECEIPT"
+    PAYMENT_VOUCHER = "PAYMENT_VOUCHER"
+    IMPORT_WAREHOUSE = "IMPORT_WAREHOUSE"
+    EXPORT_WAREHOUSE = "EXPORT_WAREHOUSE"
+    OTHER = "OTHER"
+
+
+class DocumentStatus(str, Enum):
+    UPLOADED = "UPLOADED"
+    PROCESSING = "PROCESSING"
+    OCR_DONE = "OCR_DONE"
+    REVIEWED = "REVIEWED"
+    APPROVED = "APPROVED"
+    FAILED = "FAILED"
