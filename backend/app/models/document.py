@@ -1,7 +1,9 @@
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Enum, ForeignKey, String
+from datetime import datetime
+
+from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -31,21 +33,29 @@ class Document(Base, UUIDTimestampMixin):
         nullable=False,
         index=True,
     )
-    file_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    stored_file_name: Mapped[str] = mapped_column(String(255), nullable=False)
     original_file_name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    storage_path: Mapped[str] = mapped_column(String(500), nullable=False)
+    file_path: Mapped[str] = mapped_column(String(500), nullable=False)
     mime_type: Mapped[str] = mapped_column(String(100), nullable=False)
-    file_size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    file_size: Mapped[int] = mapped_column(BigInteger, nullable=False)
     document_type: Mapped[DocumentType] = mapped_column(
         Enum(DocumentType, name="document_types"),
         nullable=False,
         default=DocumentType.OTHER,
         index=True,
     )
-    document_status: Mapped[DocumentStatus] = mapped_column(
+    document_category: Mapped[str | None] = mapped_column(String(100), nullable=True, index=True)
+    status: Mapped[DocumentStatus] = mapped_column(
         Enum(DocumentStatus, name="document_statuses"),
         nullable=False,
         default=DocumentStatus.UPLOADED,
+        index=True,
+    )
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    uploaded_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
         index=True,
     )
 
@@ -58,5 +68,5 @@ class Document(Base, UUIDTimestampMixin):
     )
     activity_logs: Mapped[list["ActivityLog"]] = relationship(
         back_populates="document",
-        cascade="all, delete-orphan",
+        passive_deletes=True,
     )

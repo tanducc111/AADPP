@@ -11,7 +11,7 @@ const dashboardMetrics: DashboardMetric[] = [
   {
     label: "Uploaded Documents",
     value: "0",
-    description: "Awaiting ingestion pipeline",
+    description: "Upload module enabled",
     icon: FileText,
   },
   {
@@ -46,7 +46,7 @@ export function DashboardOverview() {
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
               AADPP is ready for secure Google SSO, JWT sessions, role-aware navigation,
-              and protected API access. Document workflows remain reserved for later phases.
+              protected API access, client companies, and document upload management.
             </p>
           </div>
           <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground">

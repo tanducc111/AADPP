@@ -16,6 +16,10 @@ class ActivityLogAction(str, Enum):
     DELETE_CLIENT_COMPANY = "DELETE_CLIENT_COMPANY"
     ACTIVATE_CLIENT_COMPANY = "ACTIVATE_CLIENT_COMPANY"
     DEACTIVATE_CLIENT_COMPANY = "DEACTIVATE_CLIENT_COMPANY"
+    UPLOAD_DOCUMENT = "UPLOAD_DOCUMENT"
+    VIEW_DOCUMENT = "VIEW_DOCUMENT"
+    DOWNLOAD_DOCUMENT = "DOWNLOAD_DOCUMENT"
+    DELETE_DOCUMENT = "DELETE_DOCUMENT"
 
 
 class ActivityLogService:
@@ -46,6 +50,22 @@ class ActivityLogService:
         self.activity_log_repository.create_activity_log(
             action=action.value,
             user_id=user_id,
+            description=description,
+            event_metadata=event_metadata,
+        )
+
+    def record_document_event(
+        self,
+        action: ActivityLogAction,
+        user_id: uuid.UUID,
+        description: str,
+        document_id: uuid.UUID | None = None,
+        event_metadata: dict[str, Any] | None = None,
+    ) -> None:
+        self.activity_log_repository.create_activity_log(
+            action=action.value,
+            user_id=user_id,
+            document_id=document_id,
             description=description,
             event_metadata=event_metadata,
         )

@@ -25,6 +25,8 @@ class Settings(BaseSettings):
         default="http://localhost:3000",
         validation_alias="CORS_ORIGINS",
     )
+    max_upload_size_mb: int = Field(default=10, validation_alias="MAX_UPLOAD_SIZE_MB")
+    upload_dir: str = Field(default="uploads", validation_alias="UPLOAD_DIR")
 
     model_config = SettingsConfigDict(
         env_file=".env",

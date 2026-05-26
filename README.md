@@ -1,6 +1,6 @@
 # AADPP
 
-AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, client company management, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
+AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, client company management, document upload and management, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
 
 OCR and accounting business workflows are intentionally not implemented yet.
 
@@ -60,6 +60,8 @@ GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 JWT_SECRET_KEY=replace-with-a-secure-random-secret
 JWT_ALGORITHM=HS256
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
+MAX_UPLOAD_SIZE_MB=10
+UPLOAD_DIR=uploads
 ```
 
 ### Docker Compose
@@ -111,8 +113,9 @@ AADPP/
 - API access is centralized through a typed Axios client.
 - Google SSO exchanges a frontend Google ID token for a backend-issued JWT.
 - Client company management is available at `/clients` with ADMIN CRUD and ACCOUNTANT read-only access to active companies.
+- Document management is available at `/documents` with upload, metadata list/detail, download, delete, file validation, and RBAC enforcement.
 - Protected frontend routes load the current user from `/api/v1/auth/me`.
 - Backend configuration is loaded from environment variables with Pydantic Settings.
 - SQLAlchemy models use UUID primary keys, timezone-aware timestamps, enums, relationships, and indexes on searchable fields.
-- Alembic is configured with migrations for the core accounting document schema, Google SSO user fields, and client company management fields.
+- Alembic is configured with migrations for the core accounting document schema, Google SSO user fields, client company management fields, document upload fields, and audit log retention.
 - JWT and RBAC are implemented as reusable backend dependencies.

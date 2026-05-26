@@ -24,7 +24,7 @@ class ActivityLog(Base, UUIDTimestampMixin):
     )
     document_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("documents.id", ondelete="CASCADE"),
+        ForeignKey("documents.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
     )

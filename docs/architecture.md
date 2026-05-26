@@ -52,6 +52,17 @@ Client company management is the business anchor for future document uploads. Ba
 
 The API exposes paginated search and filtering through `/api/v1/client-companies`. The frontend module lives under `/clients`.
 
+## Documents
+
+Document management stores original PDF and image uploads under backend local storage while keeping metadata in PostgreSQL. Files are written below `uploads/documents/{year}/{month}/{document_id}` with generated stored file names, backend extension and MIME validation, and a configurable max file size.
+
+Backend access is enforced by role:
+
+- `ADMIN`: upload, view, download, list, and delete all documents
+- `ACCOUNTANT`: upload documents, list/view/download their own documents, and delete their own documents only while status is `UPLOADED` or `FAILED`
+
+The API exposes `/api/v1/documents/upload`, `/api/v1/documents`, `/api/v1/documents/{id}`, `/api/v1/documents/{id}/download`, and `DELETE /api/v1/documents/{id}`. The frontend module lives under `/documents`.
+
 ## Security Foundation
 
 Secrets are read from environment variables. Google ID tokens are verified server-side with the official Google auth library, then exchanged for backend JWT access tokens. The API exposes `/api/v1/auth/google`, `/api/v1/auth/me`, and `/api/v1/auth/logout`.
@@ -62,4 +73,4 @@ RBAC is enforced through backend dependencies:
 - `require_admin`
 - `require_accountant_or_admin`
 
-Frontend route guards improve user experience, but backend role checks remain the source of truth. Upload validation and OCR business logic are intentionally deferred.
+Frontend route guards improve user experience, but backend role checks remain the source of truth. OCR business logic is intentionally deferred.
