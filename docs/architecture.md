@@ -77,6 +77,12 @@ Document status transitions:
 
 The API exposes `/api/v1/documents/{id}/ocr`, `/api/v1/documents/{id}/ocr-result`, and `/api/v1/documents/{id}/approve`. The frontend review UI lives under `/documents/{id}/review`.
 
+## Dashboard and Audit Logs
+
+Dashboard analytics aggregate document volume, workflow status, OCR success rate, upload trends, top client companies, and recent activities. ADMIN users see global operational metrics. ACCOUNTANT users see role-scoped document metrics for their own uploads and active client company counts.
+
+The dashboard API lives under `/api/v1/dashboard`. Admin-only audit logs live under `/api/v1/admin/activity-logs` with pagination, search, action filtering, user filtering, date ranges, and sorting. The frontend dashboard lives under `/dashboard`; the audit log page lives under `/admin/logs`.
+
 ## Security Foundation
 
 Secrets are read from environment variables. Google ID tokens are verified server-side with the official Google auth library, then exchanged for backend JWT access tokens. The API exposes `/api/v1/auth/google`, `/api/v1/auth/me`, and `/api/v1/auth/logout`.

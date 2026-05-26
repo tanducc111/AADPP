@@ -16,6 +16,13 @@ type AppSidebarProps = {
 
 export function AppSidebar({ isMobileOpen, navigationItems, onClose }: AppSidebarProps) {
   const pathname = usePathname();
+  const activeNavigationHref = navigationItems
+    .filter(
+      (navigationItem) =>
+        pathname === navigationItem.href ||
+        (navigationItem.href !== "/" && pathname.startsWith(`${navigationItem.href}/`)),
+    )
+    .sort((firstItem, secondItem) => secondItem.href.length - firstItem.href.length)[0]?.href;
 
   return (
     <>
@@ -57,9 +64,7 @@ export function AppSidebar({ isMobileOpen, navigationItems, onClose }: AppSideba
         <nav className="flex-1 space-y-1 px-3 py-4">
           {navigationItems.map((navigationItem) => {
             const NavigationIcon = navigationItem.icon;
-            const isActive =
-              pathname === navigationItem.href ||
-              (navigationItem.href !== "/" && pathname.startsWith(`${navigationItem.href}/`));
+            const isActive = activeNavigationHref === navigationItem.href;
 
             return (
               <Link

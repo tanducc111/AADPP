@@ -25,6 +25,9 @@ class ActivityLogAction(str, Enum):
     OCR_FAILED = "OCR_FAILED"
     UPDATE_OCR_RESULT = "UPDATE_OCR_RESULT"
     APPROVE_DOCUMENT = "APPROVE_DOCUMENT"
+    BLOCK_USER = "BLOCK_USER"
+    UNBLOCK_USER = "UNBLOCK_USER"
+    DELETE_USER = "DELETE_USER"
 
 
 class ActivityLogService:

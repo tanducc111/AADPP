@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { DASHBOARD_NAVIGATION_ITEMS } from "@/constants/routes";
+import { useAuth } from "@/hooks/useAuth";
 
 type DashboardShellProps = {
   children: ReactNode;
@@ -12,12 +13,20 @@ type DashboardShellProps = {
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { currentUser } = useAuth();
+  const visibleNavigationItems = DASHBOARD_NAVIGATION_ITEMS.filter((navigationItem) => {
+    if (!navigationItem.allowedRoles) {
+      return true;
+    }
+
+    return currentUser ? navigationItem.allowedRoles.includes(currentUser.role) : false;
+  });
 
   return (
     <div className="min-h-screen bg-background">
       <AppSidebar
         isMobileOpen={isSidebarOpen}
-        navigationItems={DASHBOARD_NAVIGATION_ITEMS}
+        navigationItems={visibleNavigationItems}
         onClose={() => setIsSidebarOpen(false)}
       />
       <div className="lg:pl-72">

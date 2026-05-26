@@ -1,10 +1,13 @@
 "use client";
 
 import { ShieldCheck, Users } from "lucide-react";
+import Link from "next/link";
 
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 
 export function AdminOverview() {
@@ -44,6 +47,14 @@ export function AdminOverview() {
               Backend RBAC dependencies and frontend route guards are prepared without adding
               client-company, document, or OCR features.
             </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button asChild variant="outline">
+                <Link href={ROUTES.adminUsers}>Open Users</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={ROUTES.adminActivityLogs}>Open Activity Logs</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

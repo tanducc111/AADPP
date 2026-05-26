@@ -1,12 +1,10 @@
 # AADPP
 
-AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, client company management, document upload and management, Gemini OCR review workflows, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
-
-Dashboard analytics and advanced OCR review tooling are intentionally not implemented yet.
+AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, client company management, document upload and management, Gemini OCR review workflows, dashboard analytics, admin audit logs, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
 
 ## Tech Stack
 
-- Frontend: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui-style components, lucide-react, Axios, react-hook-form, Zod, Google OAuth
+- Frontend: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui-style components, lucide-react, Axios, react-hook-form, Zod, Recharts, Google OAuth
 - Backend: FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL, JWT utilities, Google token verification, Google GenAI SDK
 - DevOps: Docker, Docker Compose, environment-based configuration
 
@@ -119,6 +117,8 @@ AADPP/
 - Client company management is available at `/clients` with ADMIN CRUD and ACCOUNTANT read-only access to active companies.
 - Document management is available at `/documents` with upload, metadata list/detail, download, delete, file validation, and RBAC enforcement.
 - Gemini OCR is available from document detail pages and review pages with structured accounting extraction, editable line items, review, and approval workflow.
+- Dashboard analytics are available at `/dashboard` with document counts, OCR success rate, upload trends, top client companies, and recent activities.
+- Admin audit logs are available at `/admin/logs` for ADMIN users with search, filters, pagination, and date ranges.
 - Protected frontend routes load the current user from `/api/v1/auth/me`.
 - Backend configuration is loaded from environment variables with Pydantic Settings.
 - SQLAlchemy models use UUID primary keys, timezone-aware timestamps, enums, relationships, and indexes on searchable fields.

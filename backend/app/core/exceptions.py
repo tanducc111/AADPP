@@ -118,6 +118,14 @@ class InvalidOcrOperationError(AppException):
         )
 
 
+class InvalidDateRangeError(AppException):
+    def __init__(self) -> None:
+        super().__init__(
+            message="from_date must be earlier than or equal to to_date.",
+            status_code=HTTPStatus.BAD_REQUEST,
+        )
+
+
 async def app_exception_handler(request: Request, exception: AppException) -> JSONResponse:
     return JSONResponse(
         status_code=exception.status_code,
