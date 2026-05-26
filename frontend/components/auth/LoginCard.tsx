@@ -52,12 +52,13 @@ export function LoginCard() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
-      <Card className="w-full max-w-md">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-10">
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,82,255,0.24),rgba(15,23,42,0)_42%),linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0))]" />
+      <Card className="relative w-full max-w-md border-white/15 bg-white/95 shadow-2xl shadow-blue-950/30">
         <CardHeader className="space-y-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="rounded-md bg-primary p-2 text-primary-foreground">
+              <span className="gradient-primary rounded-md p-2 text-primary-foreground shadow-lg shadow-blue-500/25">
                 <ShieldCheck className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
@@ -68,7 +69,7 @@ export function LoginCard() {
             <Badge variant="secondary">SSO</Badge>
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">Sign in to your workspace</h1>
+            <h1 className="text-3xl font-black leading-tight text-foreground">Sign in to your workspace</h1>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Use your Google account to access protected accounting workflows.
             </p>

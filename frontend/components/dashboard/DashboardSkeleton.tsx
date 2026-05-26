@@ -1,16 +1,18 @@
 "use client";
 
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+
 export function DashboardSkeleton() {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: 6 }).map((_, skeletonIndex) => (
         <div
-          className="h-32 animate-pulse rounded-lg border border-border bg-card p-5"
+          className="premium-card h-36 rounded-lg p-5"
           key={skeletonIndex}
         >
-          <div className="h-3 w-32 rounded bg-muted" />
-          <div className="mt-5 h-8 w-20 rounded bg-muted" />
-          <div className="mt-4 h-3 w-44 rounded bg-muted" />
+          <LoadingSkeleton className="h-3 w-32" />
+          <LoadingSkeleton className="mt-5 h-9 w-24" />
+          <LoadingSkeleton className="mt-4 h-3 w-48" />
         </div>
       ))}
     </div>

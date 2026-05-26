@@ -20,7 +20,7 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
   const { translate } = useLanguage();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-card/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 flex h-[4.5rem] items-center gap-3 border-b border-white/70 bg-white/78 px-4 shadow-[0_12px_34px_rgba(15,23,42,0.06)] backdrop-blur-xl sm:px-6 lg:px-8">
       <Button
         aria-label={translate("openNavigation")}
         className="lg:hidden"
@@ -33,8 +33,8 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
       </Button>
 
       <div className="min-w-0 flex-1">
-        <div className="hidden max-w-md items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground sm:flex">
-          <Search className="h-4 w-4" aria-hidden="true" />
+        <div className="input-surface hidden h-11 max-w-xl items-center gap-3 rounded-md px-4 text-sm text-muted-foreground sm:flex">
+          <Search className="h-4 w-4 text-primary" aria-hidden="true" />
           <span>{translate("searchPlaceholder")}</span>
         </div>
       </div>
@@ -50,6 +50,7 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
 
       <Button
         aria-label={translate("showNotifications")}
+        className="bg-white/80"
         onClick={() => toast.info(translate("showNotifications"))}
         size="icon"
         type="button"
@@ -59,12 +60,12 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
       </Button>
 
       {currentUser ? (
-        <div className="hidden items-center gap-3 border-l border-border pl-3 md:flex">
+        <div className="hidden items-center gap-3 rounded-md border border-border/70 bg-white/76 px-2.5 py-1.5 shadow-sm md:flex">
           <div className="flex items-center gap-2">
             {currentUser.avatarUrl ? (
               <span
                 aria-label={currentUser.fullName}
-                className="h-9 w-9 rounded-md border border-border object-cover"
+                className="h-9 w-9 rounded-md border border-white object-cover shadow-sm ring-2 ring-primary/10"
                 role="img"
                 style={{
                   backgroundImage: `url(${currentUser.avatarUrl})`,
@@ -73,7 +74,7 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
                 }}
               />
             ) : (
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">
+              <span className="gradient-primary flex h-9 w-9 items-center justify-center rounded-md text-sm font-semibold text-primary-foreground shadow-sm">
                 {currentUser.fullName.slice(0, 1).toUpperCase()}
               </span>
             )}
@@ -84,7 +85,7 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
               <span className="block text-xs text-muted-foreground">{currentUser.email}</span>
             </span>
           </div>
-          <Badge variant="outline">{currentUser.role}</Badge>
+          <Badge className="font-mono" variant="outline">{currentUser.role}</Badge>
           <Button
             aria-label={translate("logOut")}
             onClick={() => {

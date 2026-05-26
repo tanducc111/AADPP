@@ -11,9 +11,10 @@ import { DocumentFilters } from "@/components/documents/DocumentFilters";
 import { DocumentTable } from "@/components/documents/DocumentTable";
 import { DocumentTableSkeleton } from "@/components/documents/DocumentTableSkeleton";
 import { DashboardShell } from "@/components/layout/DashboardShell";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import { useDocuments } from "@/hooks/useDocuments";
@@ -106,23 +107,19 @@ export function DocumentsPageContent() {
       <div className="flex flex-col gap-6">
         <DocumentBreadcrumbs breadcrumbs={[{ label: "Documents" }]} />
 
-        <section className="flex flex-col gap-3 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <Badge variant="secondary">Documents</Badge>
-            <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">
-              Document management
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Upload, organize, download, and manage source accounting documents by client company.
-            </p>
-          </div>
-          <Button asChild>
+        <SectionHeader
+          actions={
+            <Button asChild>
             <Link href={`${ROUTES.documents}/upload`}>
               <Plus className="h-4 w-4" aria-hidden="true" />
               Upload
             </Link>
           </Button>
-        </section>
+          }
+          badge="Documents"
+          description="Upload, organize, download, and manage source accounting documents by client company."
+          title="Document management"
+        />
 
         <Card>
           <CardHeader className="gap-4">
@@ -152,15 +149,16 @@ export function DocumentsPageContent() {
             {isLoadingDocuments ? (
               <DocumentTableSkeleton />
             ) : documents.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
-                <h2 className="text-base font-semibold text-foreground">No documents found</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Upload a document or adjust the current filters.
-                </p>
-                <Button asChild className="mt-4" variant="outline">
-                  <Link href={`${ROUTES.documents}/upload`}>Upload Document</Link>
-                </Button>
-              </div>
+              <EmptyState
+                action={
+                  <Button asChild variant="outline">
+                    <Link href={`${ROUTES.documents}/upload`}>Upload Document</Link>
+                  </Button>
+                }
+                description="Upload a document or adjust the current filters."
+                icon={FileText}
+                title="No documents found"
+              />
             ) : currentUser ? (
               <DocumentTable
                 currentUserId={currentUser.id}

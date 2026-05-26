@@ -5,15 +5,20 @@ import type * as React from "react";
 import { cn } from "@/lib/cn";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-white hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-muted hover:text-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-muted hover:text-foreground",
+        default:
+          "gradient-primary accent-shadow text-primary-foreground hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 active:brightness-95",
+        destructive:
+          "bg-destructive text-white shadow-sm hover:-translate-y-0.5 hover:bg-destructive/90 active:translate-y-0",
+        outline:
+          "border border-input bg-white/80 text-foreground shadow-sm hover:-translate-y-0.5 hover:border-primary/30 hover:bg-white hover:text-primary",
+        secondary:
+          "bg-secondary text-secondary-foreground shadow-sm hover:-translate-y-0.5 hover:bg-secondary/80",
+        ghost:
+          "text-muted-foreground hover:bg-muted hover:text-foreground",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -12,9 +12,10 @@ import { DocumentFilePreview } from "@/components/documents/DocumentFilePreview"
 import { DocumentStatusBadge } from "@/components/documents/DocumentStatusBadge";
 import { DocumentTypeBadge } from "@/components/documents/DocumentTypeBadge";
 import { DashboardShell } from "@/components/layout/DashboardShell";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -137,64 +138,60 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
 
         {isLoadingDocument ? (
           <div className="space-y-4">
-            <div className="h-10 max-w-xl rounded-md bg-muted" />
-            <div className="h-72 rounded-lg bg-muted" />
+            <LoadingSkeleton className="h-10 max-w-xl" />
+            <LoadingSkeleton className="h-72 rounded-lg" />
           </div>
         ) : documentDetail ? (
           <>
-            <section className="flex flex-col gap-3 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
-              <div className="min-w-0">
-                <Badge variant="secondary">Document</Badge>
-                <h1 className="mt-3 truncate text-2xl font-semibold text-foreground md:text-3xl">
-                  {documentDetail.originalFileName}
-                </h1>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <DocumentTypeBadge documentType={documentDetail.documentType} />
-                  <DocumentStatusBadge status={documentDetail.status} />
-                  <span className="text-sm text-muted-foreground">
-                    {formatFileSize(documentDetail.fileSize)}
-                  </span>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {canRunOcr ? (
-                  <Button asChild disabled={isProcessingAction} type="button">
-                    <Link href={`${ROUTES.documents}/${documentDetail.id}/ocr`}>
-                      <Sparkles className="h-4 w-4" aria-hidden="true" />
-                      Run OCR
-                    </Link>
-                  </Button>
-                ) : null}
-                {canViewOcrResult ? (
-                  <Button asChild type="button" variant="outline">
-                    <Link href={`${ROUTES.documents}/${documentDetail.id}/review`}>
-                      <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
-                      View OCR Result
-                    </Link>
-                  </Button>
-                ) : null}
-                <Button
-                  disabled={isProcessingAction}
-                  onClick={handleDownloadDocument}
-                  type="button"
-                  variant="outline"
-                >
-                  <Download className="h-4 w-4" aria-hidden="true" />
-                  Download
-                </Button>
-                {canDeleteDocument ? (
+            <SectionHeader
+              actions={
+                <div className="flex flex-wrap gap-2">
+                  {canRunOcr ? (
+                    <Button asChild disabled={isProcessingAction} type="button">
+                      <Link href={`${ROUTES.documents}/${documentDetail.id}/ocr`}>
+                        <Sparkles className="h-4 w-4" aria-hidden="true" />
+                        Run OCR
+                      </Link>
+                    </Button>
+                  ) : null}
+                  {canViewOcrResult ? (
+                    <Button asChild type="button" variant="outline">
+                      <Link href={`${ROUTES.documents}/${documentDetail.id}/review`}>
+                        <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
+                        View OCR Result
+                      </Link>
+                    </Button>
+                  ) : null}
                   <Button
                     disabled={isProcessingAction}
-                    onClick={() => setIsDeleteDialogOpen(true)}
+                    onClick={handleDownloadDocument}
                     type="button"
-                    variant="destructive"
+                    variant="outline"
                   >
-                    <Trash2 className="h-4 w-4" aria-hidden="true" />
-                    Delete
+                    <Download className="h-4 w-4" aria-hidden="true" />
+                    Download
                   </Button>
-                ) : null}
-              </div>
-            </section>
+                  {canDeleteDocument ? (
+                    <Button
+                      disabled={isProcessingAction}
+                      onClick={() => setIsDeleteDialogOpen(true)}
+                      type="button"
+                      variant="destructive"
+                    >
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
+                      Delete
+                    </Button>
+                  ) : null}
+                </div>
+              }
+              badge="Document"
+              description={formatFileSize(documentDetail.fileSize)}
+              title={documentDetail.originalFileName}
+            />
+            <div className="-mt-4 flex flex-wrap items-center gap-2 px-1">
+                  <DocumentTypeBadge documentType={documentDetail.documentType} />
+                  <DocumentStatusBadge status={documentDetail.status} />
+                </div>
 
             <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
               <Card>

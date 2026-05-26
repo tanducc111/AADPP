@@ -52,9 +52,9 @@ export function OcrLineItemsEditor({
           No line items detected.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="table-surface overflow-x-auto">
           <table className="min-w-[820px] w-full border-collapse text-left text-sm">
-            <thead className="bg-muted text-xs uppercase text-muted-foreground">
+            <thead className="bg-slate-50/90 font-mono text-xs uppercase text-muted-foreground">
               <tr>
                 <th className="px-3 py-3 font-medium">Item Name</th>
                 <th className="px-3 py-3 font-medium">Quantity</th>
@@ -66,7 +66,10 @@ export function OcrLineItemsEditor({
             </thead>
             <tbody>
               {fields.map((lineItemField, lineItemIndex) => (
-                <tr className="border-t border-border" key={lineItemField.id}>
+                <tr
+                  className="border-t border-border/80 transition-colors hover:bg-blue-50/40"
+                  key={lineItemField.id}
+                >
                   <td className="px-3 py-2">
                     <input
                       className={inputClassName}
@@ -144,4 +147,4 @@ function normalizeNumber(rawValue: unknown) {
 }
 
 const inputClassName =
-  "h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:bg-muted disabled:text-muted-foreground";
+  "input-surface h-10 w-full rounded-md px-3 text-sm text-foreground outline-none disabled:bg-muted disabled:text-muted-foreground";

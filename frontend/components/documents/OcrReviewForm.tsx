@@ -176,7 +176,7 @@ export function OcrReviewForm({
 
       <OcrLineItemsEditor control={control} isReadOnly={isApproved} register={register} />
 
-      <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:justify-end">
+      <div className="sticky bottom-0 z-10 -mx-6 flex flex-col-reverse gap-2 border-t border-border/80 bg-white/86 px-6 py-4 shadow-[0_-14px_30px_rgba(15,23,42,0.06)] backdrop-blur sm:flex-row sm:justify-end">
         <Button disabled={isSaving || isApproving} onClick={onCancel} type="button" variant="outline">
           Back
         </Button>
@@ -246,4 +246,4 @@ function normalizeNumber(rawValue: unknown) {
 }
 
 const inputClassName =
-  "h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:bg-muted disabled:text-muted-foreground";
+  "input-surface h-10 w-full rounded-md px-3 text-sm text-foreground outline-none disabled:bg-muted disabled:text-muted-foreground";

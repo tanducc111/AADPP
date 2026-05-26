@@ -10,9 +10,10 @@ import { ClientCompanyTable } from "@/components/clients/ClientCompanyTable";
 import { ClientCompanyTableSkeleton } from "@/components/clients/ClientCompanyTableSkeleton";
 import { ConfirmDialog } from "@/components/clients/ConfirmDialog";
 import { DashboardShell } from "@/components/layout/DashboardShell";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import { useClientCompanies } from "@/hooks/useClientCompanies";
@@ -80,17 +81,8 @@ export function ClientCompaniesPageContent() {
       <div className="flex flex-col gap-6">
         <ClientCompanyBreadcrumbs breadcrumbs={[{ label: "Clients" }]} />
 
-        <section className="flex flex-col gap-3 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <Badge variant="secondary">Client Companies</Badge>
-            <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">
-              Client company management
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Manage the accounting clients that documents will be attached to in later phases.
-            </p>
-          </div>
-          {canManageClientCompanies ? (
+        <SectionHeader
+          actions={canManageClientCompanies ? (
             <Button asChild>
               <Link href={`${ROUTES.clientCompanies}/new`}>
                 <Plus className="h-4 w-4" aria-hidden="true" />
@@ -98,7 +90,10 @@ export function ClientCompaniesPageContent() {
               </Link>
             </Button>
           ) : null}
-        </section>
+          badge="Client Companies"
+          description="Manage the accounting clients that documents will be attached to in later phases."
+          title="Client company management"
+        />
 
         <Card>
           <CardHeader className="gap-4">
@@ -111,7 +106,7 @@ export function ClientCompaniesPageContent() {
                 <CardDescription>{totalRecords} records found</CardDescription>
               </div>
               <div className="grid gap-2 md:grid-cols-[minmax(220px,1fr)_160px_160px_130px]">
-                <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3">
+                <div className="input-surface flex items-center gap-2 rounded-md px-3">
                   <Search className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <input
                     className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none"
@@ -183,10 +178,18 @@ export function ClientCompaniesPageContent() {
             {isLoadingClientCompanies ? (
               <ClientCompanyTableSkeleton />
             ) : clientCompanies.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
-                <h2 className="text-base font-semibold text-foreground">No client companies found</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Adjust the search or create the first client.</p>
-              </div>
+              <EmptyState
+                action={
+                  canManageClientCompanies ? (
+                    <Button asChild variant="outline">
+                      <Link href={`${ROUTES.clientCompanies}/new`}>Create Client</Link>
+                    </Button>
+                  ) : null
+                }
+                description="Adjust the search or create the first client."
+                icon={Building2}
+                title="No client companies found"
+              />
             ) : currentUser ? (
               <ClientCompanyTable
                 clientCompanies={clientCompanies}
@@ -244,4 +247,4 @@ export function ClientCompaniesPageContent() {
 }
 
 const selectClassName =
-  "h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20";
+  "input-surface h-10 rounded-md px-3 text-sm text-foreground outline-none";

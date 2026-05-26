@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { BarChart3 } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -16,7 +17,9 @@ import {
   YAxis,
 } from "recharts";
 
+import { AnimatedList, AnimatedListItem } from "@/components/ui/animated-container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getDocumentStatusLabel, getDocumentTypeLabel } from "@/constants/documents";
 import { useLanguage } from "@/hooks/useLanguage";
 import type {
@@ -28,7 +31,12 @@ import type {
 import { formatDate } from "@/utils/formatDate";
 import { formatNumber } from "@/utils/formatNumber";
 
-const CHART_COLORS = ["#2563eb", "#059669", "#f59e0b", "#dc2626", "#7c3aed", "#0891b2"];
+const CHART_COLORS = ["#0052ff", "#10b981", "#f59e0b", "#ef4444", "#64748b", "#06b6d4"];
+const tooltipStyle = {
+  border: "1px solid #e2e8f0",
+  borderRadius: "14px",
+  boxShadow: "0 16px 36px rgba(15, 23, 42, 0.12)",
+};
 
 type DashboardAnalyticsChartsProps = {
   documentsByStatus: DocumentStatusAnalytics[];
@@ -60,7 +68,8 @@ export function DashboardAnalyticsCharts({
   }));
 
   return (
-    <section className="grid gap-4 xl:grid-cols-2">
+    <AnimatedList className="grid gap-4 xl:grid-cols-2">
+      <AnimatedListItem>
       <Card>
         <CardHeader>
           <CardTitle>{translate("documentsByType")}</CardTitle>
@@ -70,17 +79,19 @@ export function DashboardAnalyticsCharts({
           <ChartFrame isEmpty={documentTypeData.every((chartPoint) => chartPoint.count === 0)}>
             <ResponsiveContainer height={260} width="100%">
               <BarChart data={documentTypeData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="label" fontSize={11} tickLine={false} />
-                <YAxis allowDecimals={false} fontSize={11} tickLine={false} />
-                <Tooltip />
-                <Bar dataKey="count" fill={CHART_COLORS[0]} radius={[4, 4, 0, 0]} />
+                <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" vertical={false} />
+                <XAxis axisLine={false} dataKey="label" fontSize={11} tickLine={false} />
+                <YAxis allowDecimals={false} axisLine={false} fontSize={11} tickLine={false} />
+                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(0, 82, 255, 0.06)" }} />
+                <Bar dataKey="count" fill={CHART_COLORS[0]} radius={[10, 10, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartFrame>
         </CardContent>
       </Card>
+      </AnimatedListItem>
 
+      <AnimatedListItem>
       <Card>
         <CardHeader>
           <CardTitle>{translate("documentsByStatus")}</CardTitle>
@@ -105,13 +116,15 @@ export function DashboardAnalyticsCharts({
                     />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={tooltipStyle} />
               </PieChart>
             </ResponsiveContainer>
           </ChartFrame>
         </CardContent>
       </Card>
+      </AnimatedListItem>
 
+      <AnimatedListItem>
       <Card>
         <CardHeader>
           <CardTitle>{translate("uploadsOverTime")}</CardTitle>
@@ -121,15 +134,16 @@ export function DashboardAnalyticsCharts({
           <ChartFrame isEmpty={uploadTrendData.length === 0}>
             <ResponsiveContainer height={260} width="100%">
               <LineChart data={uploadTrendData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="label" fontSize={11} tickLine={false} />
-                <YAxis allowDecimals={false} fontSize={11} tickLine={false} />
-                <Tooltip />
+                <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" vertical={false} />
+                <XAxis axisLine={false} dataKey="label" fontSize={11} tickLine={false} />
+                <YAxis allowDecimals={false} axisLine={false} fontSize={11} tickLine={false} />
+                <Tooltip contentStyle={tooltipStyle} />
                 <Line
+                  activeDot={{ r: 6, strokeWidth: 0 }}
                   dataKey="count"
-                  dot={{ r: 3 }}
-                  stroke={CHART_COLORS[1]}
-                  strokeWidth={2}
+                  dot={{ fill: "#ffffff", r: 4, stroke: CHART_COLORS[0], strokeWidth: 2 }}
+                  stroke={CHART_COLORS[0]}
+                  strokeWidth={3}
                   type="monotone"
                 />
               </LineChart>
@@ -137,7 +151,9 @@ export function DashboardAnalyticsCharts({
           </ChartFrame>
         </CardContent>
       </Card>
+      </AnimatedListItem>
 
+      <AnimatedListItem>
       <Card>
         <CardHeader>
           <CardTitle>{translate("topClientCompanies")}</CardTitle>
@@ -147,9 +163,9 @@ export function DashboardAnalyticsCharts({
           {topClientCompanies.length === 0 ? (
             <EmptyChartState />
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-border">
+            <div className="table-surface overflow-x-auto">
               <table className="w-full border-collapse text-left text-sm">
-                <thead className="bg-muted text-xs uppercase text-muted-foreground">
+                <thead className="bg-slate-50/90 font-mono text-xs uppercase text-muted-foreground">
                   <tr>
                     <th className="px-4 py-3 font-medium">Client Company</th>
                     <th className="px-4 py-3 text-right font-medium">Documents</th>
@@ -159,7 +175,10 @@ export function DashboardAnalyticsCharts({
                 </thead>
                 <tbody>
                   {topClientCompanies.map((clientCompany) => (
-                    <tr className="border-t border-border" key={clientCompany.clientCompanyId}>
+                    <tr
+                      className="border-t border-border/80 transition-colors hover:bg-blue-50/40"
+                      key={clientCompany.clientCompanyId}
+                    >
                       <td className="px-4 py-3 font-medium text-foreground">
                         {clientCompany.companyName}
                       </td>
@@ -180,7 +199,8 @@ export function DashboardAnalyticsCharts({
           )}
         </CardContent>
       </Card>
-    </section>
+      </AnimatedListItem>
+    </AnimatedList>
   );
 }
 
@@ -201,13 +221,12 @@ function EmptyChartState() {
   const { translate } = useLanguage();
 
   return (
-    <div className="flex h-[260px] items-center justify-center rounded-lg border border-dashed border-border bg-background p-6 text-center">
-      <div>
-        <p className="text-sm font-medium text-foreground">{translate("noDataYet")}</p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {translate("noDataYetDescription")}
-        </p>
-      </div>
+    <div className="flex h-[260px] items-center justify-center">
+      <EmptyState
+        description={translate("noDataYetDescription")}
+        icon={BarChart3}
+        title={translate("noDataYet")}
+      />
     </div>
   );
 }

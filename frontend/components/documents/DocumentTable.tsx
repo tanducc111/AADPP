@@ -31,9 +31,9 @@ export function DocumentTable({
 }: DocumentTableProps) {
   return (
     <>
-      <div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">
+      <div className="table-surface hidden overflow-x-auto lg:block">
         <table className="w-full border-collapse text-left text-sm">
-          <thead className="bg-muted text-xs uppercase text-muted-foreground">
+          <thead className="bg-slate-50/90 font-mono text-xs uppercase text-muted-foreground">
             <tr>
               <th className="px-4 py-3 font-medium">File Name</th>
               <th className="px-4 py-3 font-medium">Client Company</th>
@@ -46,7 +46,10 @@ export function DocumentTable({
           </thead>
           <tbody>
             {documents.map((uploadedDocument) => (
-              <tr className="border-t border-border" key={uploadedDocument.id}>
+              <tr
+                className="border-t border-border/80 transition-colors hover:bg-blue-50/40"
+                key={uploadedDocument.id}
+              >
                 <td className="px-4 py-3">
                   <div className="max-w-[220px]">
                     <p className="truncate font-medium text-foreground">
@@ -93,7 +96,7 @@ export function DocumentTable({
 
       <div className="grid gap-3 lg:hidden">
         {documents.map((uploadedDocument) => (
-          <div className="rounded-lg border border-border bg-card p-4" key={uploadedDocument.id}>
+          <div className="premium-card rounded-lg p-4" key={uploadedDocument.id}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h3 className="truncate font-medium text-foreground">

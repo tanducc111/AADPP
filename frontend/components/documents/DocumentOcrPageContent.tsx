@@ -10,6 +10,7 @@ import { DocumentBreadcrumbs } from "@/components/documents/DocumentBreadcrumbs"
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ROUTES } from "@/constants/routes";
 import { runDocumentOcr } from "@/services/ocrService";
 import { getErrorMessage } from "@/utils/getErrorMessage";
@@ -57,9 +58,15 @@ export function DocumentOcrPageContent({ documentId }: DocumentOcrPageContentPro
           ]}
         />
 
+        <SectionHeader
+          badge="Gemini OCR"
+          description="AADPP is extracting structured accounting fields from the original document."
+          title="AI document processing"
+        />
+
         <Card className="mx-auto w-full max-w-2xl">
           <CardHeader className="text-center">
-            <div className="mx-auto rounded-md bg-primary/10 p-3 text-primary">
+            <div className="gradient-primary mx-auto rounded-md p-3 text-primary-foreground shadow-lg shadow-blue-500/20">
               {ocrErrorMessage ? (
                 <AlertTriangle className="h-6 w-6" aria-hidden="true" />
               ) : (

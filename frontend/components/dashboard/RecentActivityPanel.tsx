@@ -1,9 +1,11 @@
 "use client";
 
-import { Activity } from "lucide-react";
+import { Activity, History } from "lucide-react";
 
+import { AnimatedList, AnimatedListItem } from "@/components/ui/animated-container";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { ActivityLog } from "@/types/dashboard";
 import { formatDateTime } from "@/utils/formatDate";
@@ -26,18 +28,17 @@ export function RecentActivityPanel({ recentActivities }: RecentActivityPanelPro
       </CardHeader>
       <CardContent>
         {recentActivities.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
-            <p className="text-sm font-medium text-foreground">{translate("noDataYet")}</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Activity logs will appear as users work through documents.
-            </p>
-          </div>
+          <EmptyState
+            description="Activity logs will appear as users work through documents."
+            icon={History}
+            title={translate("noDataYet")}
+          />
         ) : (
-          <div className="space-y-3">
+          <AnimatedList className="space-y-3">
             {recentActivities.map((activityLog) => (
+              <AnimatedListItem key={activityLog.id}>
               <div
-                className="flex flex-col gap-2 rounded-lg border border-border bg-background p-4 md:flex-row md:items-center md:justify-between"
-                key={activityLog.id}
+                className="flex flex-col gap-2 rounded-lg border border-border/80 bg-white/72 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md md:flex-row md:items-center md:justify-between"
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -59,8 +60,9 @@ export function RecentActivityPanel({ recentActivities }: RecentActivityPanelPro
                   {formatDateTime(activityLog.createdAt)}
                 </p>
               </div>
+              </AnimatedListItem>
             ))}
-          </div>
+          </AnimatedList>
         )}
       </CardContent>
     </Card>

@@ -9,8 +9,8 @@ export function ClientCompanyStatusBadge({ isActive }: ClientCompanyStatusBadgeP
     <Badge
       className={
         isActive
-          ? "border-transparent bg-accent text-accent-foreground"
-          : "border-transparent bg-muted text-muted-foreground"
+          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+          : "border-slate-200 bg-slate-100 text-slate-600"
       }
       variant="outline"
     >

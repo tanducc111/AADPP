@@ -29,9 +29,9 @@ export function ClientCompanyTable({
 
   return (
     <>
-      <div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">
+      <div className="table-surface hidden overflow-x-auto lg:block">
         <table className="w-full border-collapse text-left text-sm">
-          <thead className="bg-muted text-xs uppercase text-muted-foreground">
+          <thead className="bg-slate-50/90 font-mono text-xs uppercase text-muted-foreground">
             <tr>
               <th className="px-4 py-3 font-medium">Company Name</th>
               <th className="px-4 py-3 font-medium">Tax Code</th>
@@ -44,7 +44,10 @@ export function ClientCompanyTable({
           </thead>
           <tbody>
             {clientCompanies.map((clientCompany) => (
-              <tr className="border-t border-border" key={clientCompany.id}>
+              <tr
+                className="border-t border-border/80 transition-colors hover:bg-blue-50/40"
+                key={clientCompany.id}
+              >
                 <td className="px-4 py-3 font-medium text-foreground">
                   {clientCompany.companyName}
                 </td>
@@ -108,7 +111,7 @@ export function ClientCompanyTable({
 
       <div className="grid gap-3 lg:hidden">
         {clientCompanies.map((clientCompany) => (
-          <div className="rounded-lg border border-border bg-card p-4" key={clientCompany.id}>
+          <div className="premium-card rounded-lg p-4" key={clientCompany.id}>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-medium text-foreground">{clientCompany.companyName}</h3>

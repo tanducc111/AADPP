@@ -29,7 +29,7 @@ export function DocumentFilters({
 
   return (
     <div className="grid gap-2 xl:grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_170px_150px_145px_145px_120px]">
-      <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3">
+      <div className="input-surface flex items-center gap-2 rounded-md px-3">
         <Search className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
         <input
           className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none"
@@ -135,4 +135,4 @@ export function DocumentFilters({
 }
 
 const selectClassName =
-  "h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20";
+  "input-surface h-10 rounded-md px-3 text-sm text-foreground outline-none";

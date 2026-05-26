@@ -7,8 +7,9 @@ import { toast } from "sonner";
 import { ClientCompanyBreadcrumbs } from "@/components/clients/ClientCompanyBreadcrumbs";
 import { ClientCompanyForm } from "@/components/clients/ClientCompanyForm";
 import { DashboardShell } from "@/components/layout/DashboardShell";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ROUTES } from "@/constants/routes";
 import {
   createClientCompany,
@@ -92,10 +93,11 @@ export function ClientCompanyFormPageContent({
             { label: pageTitle },
           ]}
         />
-        <section className="border-b border-border pb-6">
-          <Badge variant="secondary">Client Companies</Badge>
-          <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">{pageTitle}</h1>
-        </section>
+        <SectionHeader
+          badge="Client Companies"
+          description="Create and maintain clean client master data for document workflows."
+          title={pageTitle}
+        />
 
         <Card>
           <CardHeader>
@@ -105,9 +107,9 @@ export function ClientCompanyFormPageContent({
           <CardContent>
             {isLoadingClientCompany ? (
               <div className="space-y-4">
-                <div className="h-10 rounded-md bg-muted" />
-                <div className="h-10 rounded-md bg-muted" />
-                <div className="h-28 rounded-md bg-muted" />
+                <LoadingSkeleton className="h-10" />
+                <LoadingSkeleton className="h-10" />
+                <LoadingSkeleton className="h-28" />
               </div>
             ) : (
               <ClientCompanyForm

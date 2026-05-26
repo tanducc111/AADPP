@@ -121,7 +121,7 @@ export function ClientCompanyForm({
 }
 
 const inputClassName =
-  "h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none transition-colors focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-60";
+  "input-surface h-10 w-full rounded-md px-3 text-sm text-foreground outline-none disabled:cursor-not-allowed disabled:opacity-60";
 
 type FormFieldProps = {
   children: ReactNode;

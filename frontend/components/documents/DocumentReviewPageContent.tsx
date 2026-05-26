@@ -11,9 +11,11 @@ import { DocumentFilePreview } from "@/components/documents/DocumentFilePreview"
 import { DocumentStatusBadge } from "@/components/documents/DocumentStatusBadge";
 import { OcrReviewForm } from "@/components/documents/OcrReviewForm";
 import { DashboardShell } from "@/components/layout/DashboardShell";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ROUTES } from "@/constants/routes";
 import { useOcrResult } from "@/hooks/useOcrResult";
 import { getDocument } from "@/services/documentService";
@@ -110,38 +112,34 @@ export function DocumentReviewPageContent({ documentId }: DocumentReviewPageCont
           ]}
         />
 
-        <section className="flex flex-col gap-3 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
-          <div className="min-w-0">
-            <Badge variant="secondary">OCR Review</Badge>
-            <h1 className="mt-3 truncate text-2xl font-semibold text-foreground md:text-3xl">
-              {documentDetail?.originalFileName ?? "Review OCR result"}
-            </h1>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {documentDetail ? <DocumentStatusBadge status={documentDetail.status} /> : null}
-              {ocrResult?.processedAt ? (
-                <span className="text-sm text-muted-foreground">
-                  Processed {formatDateTime(ocrResult.processedAt)}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          <Button
-            onClick={() => router.push(`${ROUTES.documents}/${documentId}`)}
-            type="button"
-            variant="outline"
-          >
-            Back to Document
-          </Button>
-        </section>
+        <SectionHeader
+          actions={
+            <Button
+              onClick={() => router.push(`${ROUTES.documents}/${documentId}`)}
+              type="button"
+              variant="outline"
+            >
+              Back to Document
+            </Button>
+          }
+          badge="OCR Review"
+          description={
+            ocrResult?.processedAt ? `Processed ${formatDateTime(ocrResult.processedAt)}` : undefined
+          }
+          title={documentDetail?.originalFileName ?? "Review OCR result"}
+        />
+        <div className="-mt-4 flex flex-wrap items-center gap-2 px-1">
+          {documentDetail ? <DocumentStatusBadge status={documentDetail.status} /> : null}
+        </div>
 
         {isLoadingDocument || isLoadingOcrResult ? (
           <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-            <div className="h-[520px] rounded-lg bg-muted" />
-            <div className="h-[520px] rounded-lg bg-muted" />
+            <LoadingSkeleton className="h-[520px] rounded-lg" />
+            <LoadingSkeleton className="h-[520px] rounded-lg" />
           </div>
         ) : documentDetail && ocrResult ? (
-          <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-            <Card>
+          <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
+            <Card className="xl:sticky xl:top-24 xl:self-start">
               <CardHeader>
                 <CardTitle>Document preview</CardTitle>
                 <CardDescription>Compare the source file with the extracted accounting data.</CardDescription>
@@ -179,15 +177,22 @@ export function DocumentReviewPageContent({ documentId }: DocumentReviewPageCont
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>OCR result not found</CardTitle>
-              <CardDescription>
-                {ocrErrorMessage ?? "Run OCR before reviewing extracted accounting data."}
-              </CardDescription>
+              <CardTitle>OCR result</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button onClick={() => router.push(`${ROUTES.documents}/${documentId}/ocr`)} type="button">
-                Run OCR
-              </Button>
+              <EmptyState
+                action={
+                  <Button
+                    onClick={() => router.push(`${ROUTES.documents}/${documentId}/ocr`)}
+                    type="button"
+                  >
+                    Run OCR
+                  </Button>
+                }
+                description={ocrErrorMessage ?? "Run OCR before reviewing extracted accounting data."}
+                icon={ClipboardCheck}
+                title="OCR result not found"
+              />
             </CardContent>
           </Card>
         )}

@@ -6,6 +6,9 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { SectionHeader } from "@/components/ui/section-header";
 import { useAdminActivityLogs } from "@/hooks/useAdminActivityLogs";
 import { formatDateTime } from "@/utils/formatDate";
 
@@ -39,20 +42,16 @@ export function AdminActivityLogsPageContent() {
   return (
     <DashboardShell>
       <div className="flex flex-col gap-6">
-        <section className="flex flex-col gap-3 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <Badge variant="secondary">Admin Audit</Badge>
-            <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">
-              Activity logs
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Search and review authentication, client company, document, OCR, and approval events.
-            </p>
-          </div>
-          <Button onClick={refreshActivityLogs} type="button" variant="outline">
-            Refresh
-          </Button>
-        </section>
+        <SectionHeader
+          actions={
+            <Button onClick={refreshActivityLogs} type="button" variant="outline">
+              Refresh
+            </Button>
+          }
+          badge="Admin Audit"
+          description="Search and review authentication, client company, document, OCR, and approval events."
+          title="Activity logs"
+        />
 
         <Card>
           <CardHeader className="gap-4">
@@ -67,7 +66,7 @@ export function AdminActivityLogsPageContent() {
             <div className="grid gap-3 lg:grid-cols-[1.2fr_0.8fr_1fr_1fr_1fr]">
               <label className="grid gap-1 text-sm">
                 <span className="text-xs font-medium text-muted-foreground">Search</span>
-                <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3">
+                <div className="input-surface flex items-center gap-2 rounded-md px-3">
                   <Search className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <input
                     className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none"
@@ -83,7 +82,7 @@ export function AdminActivityLogsPageContent() {
               <label className="grid gap-1 text-sm">
                 <span className="text-xs font-medium text-muted-foreground">Action</span>
                 <select
-                  className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none"
+                  className="input-surface h-10 rounded-md px-3 text-sm outline-none"
                   onChange={(event) =>
                     updateActivityLogQuery({ action: event.target.value || undefined, page: 1 })
                   }
@@ -101,7 +100,7 @@ export function AdminActivityLogsPageContent() {
               <label className="grid gap-1 text-sm">
                 <span className="text-xs font-medium text-muted-foreground">User ID</span>
                 <input
-                  className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none"
+                  className="input-surface h-10 rounded-md px-3 text-sm outline-none"
                   onChange={(event) =>
                     updateActivityLogQuery({ page: 1, userId: event.target.value || undefined })
                   }
@@ -113,7 +112,7 @@ export function AdminActivityLogsPageContent() {
               <label className="grid gap-1 text-sm">
                 <span className="text-xs font-medium text-muted-foreground">From</span>
                 <input
-                  className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none"
+                  className="input-surface h-10 rounded-md px-3 text-sm outline-none"
                   onChange={(event) =>
                     updateActivityLogQuery({ fromDate: event.target.value || undefined, page: 1 })
                   }
@@ -125,7 +124,7 @@ export function AdminActivityLogsPageContent() {
               <label className="grid gap-1 text-sm">
                 <span className="text-xs font-medium text-muted-foreground">To</span>
                 <input
-                  className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none"
+                  className="input-surface h-10 rounded-md px-3 text-sm outline-none"
                   onChange={(event) =>
                     updateActivityLogQuery({ page: 1, toDate: event.target.value || undefined })
                   }
@@ -146,16 +145,15 @@ export function AdminActivityLogsPageContent() {
             {isLoadingActivityLogs ? (
               <AdminActivityLogSkeleton />
             ) : activityLogs.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
-                <h2 className="text-base font-semibold text-foreground">No activity logs found</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Adjust filters or wait for users to perform auditable actions.
-                </p>
-              </div>
+              <EmptyState
+                description="Adjust filters or wait for users to perform auditable actions."
+                icon={Activity}
+                title="No activity logs found"
+              />
             ) : (
-              <div className="overflow-x-auto rounded-lg border border-border">
+              <div className="table-surface overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm">
-                  <thead className="bg-muted text-xs uppercase text-muted-foreground">
+                  <thead className="bg-slate-50/90 font-mono text-xs uppercase text-muted-foreground">
                     <tr>
                       <th className="px-4 py-3 font-medium">Time</th>
                       <th className="px-4 py-3 font-medium">User</th>
@@ -166,7 +164,10 @@ export function AdminActivityLogsPageContent() {
                   </thead>
                   <tbody>
                     {activityLogs.map((activityLog) => (
-                      <tr className="border-t border-border" key={activityLog.id}>
+                      <tr
+                        className="border-t border-border/80 transition-colors hover:bg-blue-50/40"
+                        key={activityLog.id}
+                      >
                         <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                           {formatDateTime(activityLog.createdAt)}
                         </td>
@@ -228,10 +229,7 @@ function AdminActivityLogSkeleton() {
   return (
     <div className="space-y-2">
       {Array.from({ length: 6 }).map((_, skeletonIndex) => (
-        <div
-          className="h-14 animate-pulse rounded-md border border-border bg-muted"
-          key={skeletonIndex}
-        />
+        <LoadingSkeleton className="h-14 rounded-md" key={skeletonIndex} />
       ))}
     </div>
   );

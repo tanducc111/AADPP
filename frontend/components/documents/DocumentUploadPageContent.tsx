@@ -7,8 +7,9 @@ import { toast } from "sonner";
 import { DocumentBreadcrumbs } from "@/components/documents/DocumentBreadcrumbs";
 import { DocumentUploadForm } from "@/components/documents/DocumentUploadForm";
 import { DashboardShell } from "@/components/layout/DashboardShell";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { SectionHeader } from "@/components/ui/section-header";
 import { ROUTES } from "@/constants/routes";
 import { getClientCompanies } from "@/services/clientCompanyService";
 import { uploadDocument } from "@/services/documentService";
@@ -79,15 +80,11 @@ export function DocumentUploadPageContent() {
             { label: "Upload" },
           ]}
         />
-        <section className="border-b border-border pb-6">
-          <Badge variant="secondary">Documents</Badge>
-          <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">
-            Upload document
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Attach a source accounting document to an active client company.
-          </p>
-        </section>
+        <SectionHeader
+          badge="Documents"
+          description="Attach a source accounting document to an active client company."
+          title="Upload document"
+        />
 
         <Card>
           <CardHeader>
@@ -98,11 +95,11 @@ export function DocumentUploadPageContent() {
             {isLoadingClientCompanies ? (
               <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
                 <div className="space-y-4">
-                  <div className="h-10 rounded-md bg-muted" />
-                  <div className="h-10 rounded-md bg-muted" />
-                  <div className="h-28 rounded-md bg-muted" />
+                  <LoadingSkeleton className="h-10" />
+                  <LoadingSkeleton className="h-10" />
+                  <LoadingSkeleton className="h-28" />
                 </div>
-                <div className="h-64 rounded-lg bg-muted" />
+                <LoadingSkeleton className="h-64 rounded-lg" />
               </div>
             ) : (
               <DocumentUploadForm

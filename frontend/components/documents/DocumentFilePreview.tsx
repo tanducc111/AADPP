@@ -53,20 +53,20 @@ export function DocumentFilePreview({ documentDetail }: DocumentFilePreviewProps
 
   if (!isPreviewSupported(documentDetail.mimeType)) {
     return (
-      <div className="flex min-h-72 items-center justify-center rounded-lg border border-dashed border-border bg-background p-6 text-center text-sm text-muted-foreground">
+      <div className="flex min-h-72 items-center justify-center rounded-lg border border-dashed border-primary/20 bg-gradient-to-br from-white to-blue-50/60 p-6 text-center text-sm text-muted-foreground">
         Preview is not available for this file type.
       </div>
     );
   }
 
   if (!previewUrl) {
-    return <div className="min-h-72 rounded-lg bg-muted" />;
+    return <div className="shimmer-surface min-h-72 rounded-lg" />;
   }
 
   if (documentDetail.mimeType === "application/pdf") {
     return (
       <iframe
-        className="h-[520px] w-full rounded-lg border border-border bg-background"
+        className="h-[560px] w-full rounded-lg border border-border bg-white shadow-inner"
         src={previewUrl}
         title={documentDetail.originalFileName}
       />
@@ -74,11 +74,11 @@ export function DocumentFilePreview({ documentDetail }: DocumentFilePreviewProps
   }
 
   return (
-    <div className="flex min-h-72 items-center justify-center rounded-lg border border-border bg-background p-3">
+    <div className="flex min-h-72 items-center justify-center rounded-lg border border-border bg-slate-950 p-3 shadow-inner">
       {/* eslint-disable-next-line @next/next/no-img-element -- Blob previews cannot use the Next image optimizer. */}
       <img
         alt={documentDetail.originalFileName}
-        className="max-h-[520px] max-w-full rounded-md object-contain"
+        className="max-h-[560px] max-w-full rounded-md object-contain"
         src={previewUrl}
       />
     </div>

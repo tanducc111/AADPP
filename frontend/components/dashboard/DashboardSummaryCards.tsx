@@ -9,7 +9,8 @@ import {
   TriangleAlert,
 } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AnimatedList, AnimatedListItem } from "@/components/ui/animated-container";
+import { MetricCard } from "@/components/ui/metric-card";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { DashboardSummary } from "@/types/dashboard";
 import { formatNumber, formatPercentage } from "@/utils/formatNumber";
@@ -26,61 +27,58 @@ export function DashboardSummaryCards({ dashboardSummary }: DashboardSummaryCard
       value: formatNumber(dashboardSummary.totalDocuments),
       description: `${formatNumber(dashboardSummary.totalOcrResults)} ${translate("totalDocumentsDescription")}`,
       icon: FileText,
+      accentClassName: "bg-blue-50 text-primary",
     },
     {
       label: translate("pendingReview"),
       value: formatNumber(dashboardSummary.ocrDoneDocuments),
       description: translate("pendingReviewDescription"),
       icon: FileCheck2,
+      accentClassName: "bg-amber-50 text-amber-600 ring-amber-100",
     },
     {
       label: translate("approvedDocuments"),
       value: formatNumber(dashboardSummary.approvedDocuments),
       description: `${formatNumber(dashboardSummary.reviewedDocuments)} ${translate("approvedDocumentsDescription")}`,
       icon: CheckCircle2,
+      accentClassName: "bg-emerald-50 text-emerald-600 ring-emerald-100",
     },
     {
       label: translate("ocrSuccessRate"),
       value: formatPercentage(dashboardSummary.ocrSuccessRate),
       description: translate("ocrSuccessRateDescription"),
       icon: Gauge,
+      accentClassName: "bg-cyan-50 text-cyan-600 ring-cyan-100",
     },
     {
       label: translate("failedDocuments"),
       value: formatNumber(dashboardSummary.failedDocuments),
       description: translate("failedDocumentsDescription"),
       icon: TriangleAlert,
+      accentClassName: "bg-red-50 text-red-600 ring-red-100",
     },
     {
       label: translate("activeClientCompanies"),
       value: formatNumber(dashboardSummary.activeClientCompanies),
       description: `${formatNumber(dashboardSummary.totalClientCompanies)} ${translate("activeClientCompaniesDescription")}`,
       icon: Building2,
+      accentClassName: "bg-slate-100 text-slate-700 ring-slate-200",
     },
   ];
 
   return (
-    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {summaryCards.map((summaryCard) => {
-        const SummaryIcon = summaryCard.icon;
-
-        return (
-          <Card key={summaryCard.label}>
-            <CardHeader className="flex flex-row items-start justify-between gap-3 pb-2">
-              <div>
-                <p className="text-sm text-muted-foreground">{summaryCard.label}</p>
-                <CardTitle className="mt-2 text-2xl">{summaryCard.value}</CardTitle>
-              </div>
-              <span className="rounded-md bg-accent p-2 text-accent-foreground">
-                <SummaryIcon className="h-4 w-4" aria-hidden="true" />
-              </span>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{summaryCard.description}</p>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </section>
+    <AnimatedList className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {summaryCards.map((summaryCard) => (
+        <AnimatedListItem key={summaryCard.label}>
+          <MetricCard
+            accentClassName={summaryCard.accentClassName}
+            description={summaryCard.description}
+            icon={summaryCard.icon}
+            label={summaryCard.label}
+            value={summaryCard.value}
+          />
+        </AnimatedListItem>
+      ))}
+    </AnimatedList>
   );
 }

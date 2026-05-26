@@ -161,7 +161,7 @@ export function DocumentUploadForm({
             Note
           </label>
           <textarea
-            className="mt-2 min-h-28 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
+            className="input-surface mt-2 min-h-28 w-full rounded-md px-3 py-2 text-sm text-foreground outline-none"
             id="note"
             onChange={(event) => setNote(event.target.value)}
             value={note}
@@ -172,8 +172,8 @@ export function DocumentUploadForm({
       <div className="space-y-4">
         <div
           className={cn(
-            "flex min-h-64 flex-col items-center justify-center rounded-lg border border-dashed border-border bg-background p-6 text-center transition-colors",
-            isDraggingFile ? "border-primary bg-primary/5" : "",
+            "flex min-h-64 flex-col items-center justify-center rounded-lg border border-dashed border-primary/20 bg-gradient-to-br from-white via-white to-blue-50/70 p-6 text-center shadow-sm transition-all duration-200",
+            isDraggingFile ? "scale-[1.01] border-primary bg-primary/5 shadow-lg shadow-blue-500/10" : "",
           )}
           onClick={() => fileInputRef.current?.click()}
           onDragLeave={() => setIsDraggingFile(false)}
@@ -197,7 +197,7 @@ export function DocumentUploadForm({
             ref={fileInputRef}
             type="file"
           />
-          <span className="rounded-md bg-primary/10 p-3 text-primary">
+          <span className="gradient-primary rounded-md p-3 text-primary-foreground shadow-lg shadow-blue-500/20">
             <UploadCloud className="h-6 w-6" aria-hidden="true" />
           </span>
           <h2 className="mt-4 text-base font-semibold text-foreground">Drop document here</h2>
@@ -210,7 +210,7 @@ export function DocumentUploadForm({
         </div>
 
         {selectedFile ? (
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4">
+          <div className="premium-card flex items-center justify-between gap-3 rounded-lg p-4">
             <div className="flex min-w-0 items-center gap-3">
               <span className="rounded-md bg-muted p-2 text-primary">
                 <FileUp className="h-4 w-4" aria-hidden="true" />
@@ -255,4 +255,4 @@ export function DocumentUploadForm({
 }
 
 const inputClassName =
-  "mt-2 h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20";
+  "input-surface mt-2 h-10 w-full rounded-md px-3 text-sm text-foreground outline-none";

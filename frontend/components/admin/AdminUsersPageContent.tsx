@@ -9,6 +9,9 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { SectionHeader } from "@/components/ui/section-header";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { deleteAdminUser, updateAdminUserAccess } from "@/services/adminUserService";
@@ -63,20 +66,16 @@ export function AdminUsersPageContent() {
   return (
     <DashboardShell>
       <div className="flex flex-col gap-6">
-        <section className="flex flex-col gap-3 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <Badge variant="secondary">Admin Users</Badge>
-            <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">
-              User management
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              View accounts, block or restore access, and remove unused user accounts.
-            </p>
-          </div>
-          <Button onClick={refreshAdminUsers} type="button" variant="outline">
-            Refresh
-          </Button>
-        </section>
+        <SectionHeader
+          actions={
+            <Button onClick={refreshAdminUsers} type="button" variant="outline">
+              Refresh
+            </Button>
+          }
+          badge="Admin Users"
+          description="View accounts, block or restore access, and remove unused user accounts."
+          title="User management"
+        />
 
         <Card>
           <CardHeader className="gap-4">
@@ -91,7 +90,7 @@ export function AdminUsersPageContent() {
             <div className="grid gap-3 md:grid-cols-[1.4fr_0.7fr_0.7fr]">
               <label className="grid gap-1 text-sm">
                 <span className="text-xs font-medium text-muted-foreground">Search</span>
-                <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3">
+                <div className="input-surface flex items-center gap-2 rounded-md px-3">
                   <Search className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <input
                     className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none"
@@ -107,7 +106,7 @@ export function AdminUsersPageContent() {
               <label className="grid gap-1 text-sm">
                 <span className="text-xs font-medium text-muted-foreground">Role</span>
                 <select
-                  className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none"
+                  className="input-surface h-10 rounded-md px-3 text-sm outline-none"
                   onChange={(event) =>
                     updateAdminUserQuery({
                       page: 1,
@@ -128,7 +127,7 @@ export function AdminUsersPageContent() {
               <label className="grid gap-1 text-sm">
                 <span className="text-xs font-medium text-muted-foreground">Access</span>
                 <select
-                  className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none"
+                  className="input-surface h-10 rounded-md px-3 text-sm outline-none"
                   onChange={(event) =>
                     updateAdminUserQuery({
                       isLocked:
@@ -164,14 +163,15 @@ export function AdminUsersPageContent() {
             {isLoadingUsers ? (
               <AdminUsersSkeleton />
             ) : adminUsers.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
-                <h2 className="text-base font-semibold text-foreground">No users found</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Adjust search or filters.</p>
-              </div>
+              <EmptyState
+                description="Adjust search or filters."
+                icon={Users}
+                title="No users found"
+              />
             ) : (
-              <div className="overflow-x-auto rounded-lg border border-border">
+              <div className="table-surface overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm">
-                  <thead className="bg-muted text-xs uppercase text-muted-foreground">
+                  <thead className="bg-slate-50/90 font-mono text-xs uppercase text-muted-foreground">
                     <tr>
                       <th className="px-4 py-3 font-medium">User</th>
                       <th className="px-4 py-3 font-medium">Role</th>
@@ -183,7 +183,10 @@ export function AdminUsersPageContent() {
                   </thead>
                   <tbody>
                     {adminUsers.map((adminUser) => (
-                      <tr className="border-t border-border" key={adminUser.id}>
+                      <tr
+                        className="border-t border-border/80 transition-colors hover:bg-blue-50/40"
+                        key={adminUser.id}
+                      >
                         <td className="px-4 py-3">
                           <p className="font-medium text-foreground">{adminUser.fullName}</p>
                           <p className="mt-1 text-xs text-muted-foreground">{adminUser.email}</p>
@@ -296,10 +299,7 @@ function AdminUsersSkeleton() {
   return (
     <div className="space-y-2">
       {Array.from({ length: 6 }).map((_, skeletonIndex) => (
-        <div
-          className="h-16 animate-pulse rounded-md border border-border bg-muted"
-          key={skeletonIndex}
-        />
+        <LoadingSkeleton className="h-16 rounded-md" key={skeletonIndex} />
       ))}
     </div>
   );
