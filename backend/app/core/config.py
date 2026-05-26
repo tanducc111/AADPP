@@ -27,6 +27,13 @@ class Settings(BaseSettings):
     )
     max_upload_size_mb: int = Field(default=10, validation_alias="MAX_UPLOAD_SIZE_MB")
     upload_dir: str = Field(default="uploads", validation_alias="UPLOAD_DIR")
+    gemini_api_key: str = Field(default="", validation_alias="GEMINI_API_KEY")
+    gemini_model: str = Field(default="gemini-2.0-flash", validation_alias="GEMINI_MODEL")
+    gemini_temperature: float = Field(default=0, validation_alias="GEMINI_TEMPERATURE")
+    gemini_max_output_tokens: int = Field(
+        default=4096,
+        validation_alias="GEMINI_MAX_OUTPUT_TOKENS",
+    )
 
     model_config = SettingsConfigDict(
         env_file=".env",

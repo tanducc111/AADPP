@@ -1,13 +1,13 @@
 # AADPP
 
-AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, client company management, document upload and management, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
+AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, client company management, document upload and management, Gemini OCR review workflows, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
 
-OCR and accounting business workflows are intentionally not implemented yet.
+Dashboard analytics and advanced OCR review tooling are intentionally not implemented yet.
 
 ## Tech Stack
 
 - Frontend: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui-style components, lucide-react, Axios, react-hook-form, Zod, Google OAuth
-- Backend: FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL, JWT utilities, Google token verification
+- Backend: FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL, JWT utilities, Google token verification, Google GenAI SDK
 - DevOps: Docker, Docker Compose, environment-based configuration
 
 ## Local Setup
@@ -62,6 +62,10 @@ JWT_ALGORITHM=HS256
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
 MAX_UPLOAD_SIZE_MB=10
 UPLOAD_DIR=uploads
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_MODEL=gemini-2.0-flash
+GEMINI_TEMPERATURE=0
+GEMINI_MAX_OUTPUT_TOKENS=4096
 ```
 
 ### Docker Compose
@@ -114,8 +118,9 @@ AADPP/
 - Google SSO exchanges a frontend Google ID token for a backend-issued JWT.
 - Client company management is available at `/clients` with ADMIN CRUD and ACCOUNTANT read-only access to active companies.
 - Document management is available at `/documents` with upload, metadata list/detail, download, delete, file validation, and RBAC enforcement.
+- Gemini OCR is available from document detail pages and review pages with structured accounting extraction, editable line items, review, and approval workflow.
 - Protected frontend routes load the current user from `/api/v1/auth/me`.
 - Backend configuration is loaded from environment variables with Pydantic Settings.
 - SQLAlchemy models use UUID primary keys, timezone-aware timestamps, enums, relationships, and indexes on searchable fields.
-- Alembic is configured with migrations for the core accounting document schema, Google SSO user fields, client company management fields, document upload fields, and audit log retention.
+- Alembic is configured with migrations for the core accounting document schema, Google SSO user fields, client company management fields, document upload fields, audit log retention, and OCR review workflow fields.
 - JWT and RBAC are implemented as reusable backend dependencies.

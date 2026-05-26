@@ -63,6 +63,20 @@ Backend access is enforced by role:
 
 The API exposes `/api/v1/documents/upload`, `/api/v1/documents`, `/api/v1/documents/{id}`, `/api/v1/documents/{id}/download`, and `DELETE /api/v1/documents/{id}`. The frontend module lives under `/documents`.
 
+## OCR Review Workflow
+
+OCR uses the backend-only Google GenAI SDK with Gemini. The frontend never receives the Gemini API key. Document files are loaded from secure local storage, sent to Gemini by the backend, parsed as JSON, and persisted in `ocr_results` with structured accounting fields plus `line_items`.
+
+Document status transitions:
+
+- `UPLOADED` or `FAILED` -> `PROCESSING` when OCR starts
+- `PROCESSING` -> `OCR_DONE` when Gemini extraction succeeds
+- `PROCESSING` -> `FAILED` when OCR fails
+- `OCR_DONE` or `REVIEWED` -> `REVIEWED` when users save reviewed data
+- `OCR_DONE` or `REVIEWED` -> `APPROVED` when users approve the result
+
+The API exposes `/api/v1/documents/{id}/ocr`, `/api/v1/documents/{id}/ocr-result`, and `/api/v1/documents/{id}/approve`. The frontend review UI lives under `/documents/{id}/review`.
+
 ## Security Foundation
 
 Secrets are read from environment variables. Google ID tokens are verified server-side with the official Google auth library, then exchanged for backend JWT access tokens. The API exposes `/api/v1/auth/google`, `/api/v1/auth/me`, and `/api/v1/auth/logout`.
@@ -73,4 +87,4 @@ RBAC is enforced through backend dependencies:
 - `require_admin`
 - `require_accountant_or_admin`
 
-Frontend route guards improve user experience, but backend role checks remain the source of truth. OCR business logic is intentionally deferred.
+Frontend route guards improve user experience, but backend role checks remain the source of truth.

@@ -1,12 +1,14 @@
 "use client";
 
-import { Download, FileText, Trash2 } from "lucide-react";
+import { ClipboardCheck, Download, FileText, Sparkles, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/clients/ConfirmDialog";
 import { DocumentBreadcrumbs } from "@/components/documents/DocumentBreadcrumbs";
+import { DocumentFilePreview } from "@/components/documents/DocumentFilePreview";
 import { DocumentStatusBadge } from "@/components/documents/DocumentStatusBadge";
 import { DocumentTypeBadge } from "@/components/documents/DocumentTypeBadge";
 import { DashboardShell } from "@/components/layout/DashboardShell";
@@ -37,7 +39,6 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
   const [isLoadingDocument, setIsLoadingDocument] = useState(true);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const canDeleteDocument =
     Boolean(documentDetail && currentUser?.role === "ADMIN") ||
     Boolean(
@@ -45,6 +46,20 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
         currentUser &&
         documentDetail.uploadedByUserId === currentUser.id &&
         (documentDetail.status === "UPLOADED" || documentDetail.status === "FAILED"),
+    );
+  const canUseDocumentWorkflow =
+    Boolean(documentDetail && currentUser?.role === "ADMIN") ||
+    Boolean(documentDetail && currentUser && documentDetail.uploadedByUserId === currentUser.id);
+  const canRunOcr =
+    canUseDocumentWorkflow &&
+    Boolean(documentDetail && (documentDetail.status === "UPLOADED" || documentDetail.status === "FAILED"));
+  const canViewOcrResult =
+    canUseDocumentWorkflow &&
+    Boolean(
+      documentDetail &&
+        (documentDetail.status === "OCR_DONE" ||
+          documentDetail.status === "REVIEWED" ||
+          documentDetail.status === "APPROVED"),
     );
 
   useEffect(() => {
@@ -74,46 +89,6 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
       shouldUpdateState = false;
     };
   }, [documentId]);
-
-  useEffect(() => {
-    const selectedDocumentDetail = documentDetail;
-    let objectUrl: string | null = null;
-    let shouldUpdateState = true;
-
-    async function loadPreview() {
-      await Promise.resolve();
-
-      if (!selectedDocumentDetail || !isPreviewSupported(selectedDocumentDetail.mimeType)) {
-        if (shouldUpdateState) {
-          setPreviewUrl(null);
-        }
-        return;
-      }
-
-      try {
-        const documentDownload = await downloadDocument(selectedDocumentDetail.id);
-        objectUrl = window.URL.createObjectURL(documentDownload.blob);
-
-        if (shouldUpdateState) {
-          setPreviewUrl(objectUrl);
-        }
-      } catch {
-        if (shouldUpdateState) {
-          setPreviewUrl(null);
-        }
-      }
-    }
-
-    void loadPreview();
-
-    return () => {
-      shouldUpdateState = false;
-
-      if (objectUrl) {
-        window.URL.revokeObjectURL(objectUrl);
-      }
-    };
-  }, [documentDetail]);
 
   async function handleDownloadDocument() {
     if (!documentDetail) {
@@ -182,6 +157,22 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
+                {canRunOcr ? (
+                  <Button asChild disabled={isProcessingAction} type="button">
+                    <Link href={`${ROUTES.documents}/${documentDetail.id}/ocr`}>
+                      <Sparkles className="h-4 w-4" aria-hidden="true" />
+                      Run OCR
+                    </Link>
+                  </Button>
+                ) : null}
+                {canViewOcrResult ? (
+                  <Button asChild type="button" variant="outline">
+                    <Link href={`${ROUTES.documents}/${documentDetail.id}/review`}>
+                      <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
+                      View OCR Result
+                    </Link>
+                  </Button>
+                ) : null}
                 <Button
                   disabled={isProcessingAction}
                   onClick={handleDownloadDocument}
@@ -215,7 +206,7 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
                   <CardDescription>Original uploaded source file.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <DocumentPreview documentDetail={documentDetail} previewUrl={previewUrl} />
+                  <DocumentFilePreview documentDetail={documentDetail} />
                 </CardContent>
               </Card>
 
@@ -238,6 +229,12 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
                     </dl>
                   </CardContent>
                 </Card>
+
+                {documentDetail.status === "FAILED" ? (
+                  <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    OCR failed or the document is marked as failed. You can run OCR again when ready.
+                  </div>
+                ) : null}
 
                 <Card>
                   <CardHeader>
@@ -287,48 +284,4 @@ function DetailField({ label, value }: DetailFieldProps) {
       <dd className="mt-1 break-words font-medium text-foreground">{value ?? "-"}</dd>
     </div>
   );
-}
-
-type DocumentPreviewProps = {
-  documentDetail: DocumentDetail;
-  previewUrl: string | null;
-};
-
-function DocumentPreview({ documentDetail, previewUrl }: DocumentPreviewProps) {
-  if (!isPreviewSupported(documentDetail.mimeType)) {
-    return (
-      <div className="flex min-h-72 items-center justify-center rounded-lg border border-dashed border-border bg-background p-6 text-center text-sm text-muted-foreground">
-        Preview is not available for this file type.
-      </div>
-    );
-  }
-
-  if (!previewUrl) {
-    return <div className="min-h-72 rounded-lg bg-muted" />;
-  }
-
-  if (documentDetail.mimeType === "application/pdf") {
-    return (
-      <iframe
-        className="h-[520px] w-full rounded-lg border border-border bg-background"
-        src={previewUrl}
-        title={documentDetail.originalFileName}
-      />
-    );
-  }
-
-  return (
-    <div className="flex min-h-72 items-center justify-center rounded-lg border border-border bg-background p-3">
-      {/* eslint-disable-next-line @next/next/no-img-element -- Blob previews cannot use the Next image optimizer. */}
-      <img
-        alt={documentDetail.originalFileName}
-        className="max-h-[520px] max-w-full rounded-md object-contain"
-        src={previewUrl}
-      />
-    </div>
-  );
-}
-
-function isPreviewSupported(mimeType: string) {
-  return mimeType === "application/pdf" || mimeType === "image/jpeg" || mimeType === "image/png";
 }

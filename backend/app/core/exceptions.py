@@ -92,6 +92,32 @@ class StoredFileNotFoundError(AppException):
         )
 
 
+class OcrProcessingError(AppException):
+    def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
+        super().__init__(
+            message=message,
+            status_code=HTTPStatus.BAD_GATEWAY,
+            details=details,
+        )
+
+
+class OcrResultNotFoundError(AppException):
+    def __init__(self) -> None:
+        super().__init__(
+            message="OCR result was not found.",
+            status_code=HTTPStatus.NOT_FOUND,
+        )
+
+
+class InvalidOcrOperationError(AppException):
+    def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
+        super().__init__(
+            message=message,
+            status_code=HTTPStatus.BAD_REQUEST,
+            details=details,
+        )
+
+
 async def app_exception_handler(request: Request, exception: AppException) -> JSONResponse:
     return JSONResponse(
         status_code=exception.status_code,

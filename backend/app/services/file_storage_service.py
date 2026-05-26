@@ -108,6 +108,14 @@ class FileStorageService:
             mime_type=mime_type,
         )
 
+    def get_stored_file_path(self, file_path: str) -> Path:
+        resolved_file_path = self._resolve_upload_path(Path(file_path))
+
+        if not resolved_file_path.is_file():
+            raise StoredFileNotFoundError()
+
+        return resolved_file_path
+
     def delete_file_if_exists(self, file_path: str) -> bool:
         resolved_file_path = self._resolve_upload_path(Path(file_path))
 

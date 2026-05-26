@@ -19,7 +19,9 @@ from app.schemas.documents import (
     DocumentUploadForm,
     SortOrder,
 )
+from app.schemas.ocr_results import OcrResultRead, OcrResultUpdate
 from app.services.document_service import DocumentService
+from app.services.ocr_workflow_service import OcrWorkflowService
 
 router = APIRouter(
     prefix="/documents",
@@ -126,6 +128,75 @@ async def download_document(
         media_type=downloadable_file.mime_type,
         filename=downloadable_file.file_name,
     )
+
+
+@router.post(
+    "/{document_id}/ocr",
+    response_model=OcrResultRead,
+    summary="Run Gemini OCR",
+    description="Run Gemini OCR synchronously for an uploaded or failed document.",
+)
+async def run_document_ocr(
+    document_id: UUID,
+    current_user: User = Depends(get_current_user),
+    database_session: Session = Depends(get_db_session),
+) -> OcrResultRead:
+    ocr_workflow_service = OcrWorkflowService(database_session)
+
+    return ocr_workflow_service.run_ocr(document_id, current_user)
+
+
+@router.get(
+    "/{document_id}/ocr-result",
+    response_model=OcrResultRead,
+    summary="Get OCR result",
+    description="Get the latest OCR result and extracted line items for a document.",
+)
+async def get_document_ocr_result(
+    document_id: UUID,
+    current_user: User = Depends(get_current_user),
+    database_session: Session = Depends(get_db_session),
+) -> OcrResultRead:
+    ocr_workflow_service = OcrWorkflowService(database_session)
+
+    return ocr_workflow_service.get_ocr_result(document_id, current_user)
+
+
+@router.put(
+    "/{document_id}/ocr-result",
+    response_model=OcrResultRead,
+    summary="Update reviewed OCR result",
+    description="Update structured OCR fields and line items. Marks the document as reviewed.",
+)
+async def update_document_ocr_result(
+    document_id: UUID,
+    ocr_result_update: OcrResultUpdate,
+    current_user: User = Depends(get_current_user),
+    database_session: Session = Depends(get_db_session),
+) -> OcrResultRead:
+    ocr_workflow_service = OcrWorkflowService(database_session)
+
+    return ocr_workflow_service.update_ocr_result(
+        document_id,
+        ocr_result_update,
+        current_user,
+    )
+
+
+@router.post(
+    "/{document_id}/approve",
+    response_model=OcrResultRead,
+    summary="Approve document OCR result",
+    description="Approve the OCR result and move the document to APPROVED status.",
+)
+async def approve_document(
+    document_id: UUID,
+    current_user: User = Depends(get_current_user),
+    database_session: Session = Depends(get_db_session),
+) -> OcrResultRead:
+    ocr_workflow_service = OcrWorkflowService(database_session)
+
+    return ocr_workflow_service.approve_document(document_id, current_user)
 
 
 @router.delete(

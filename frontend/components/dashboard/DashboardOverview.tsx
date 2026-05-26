@@ -23,7 +23,7 @@ const dashboardMetrics: DashboardMetric[] = [
   {
     label: "Reviewed Documents",
     value: "0",
-    description: "Human review queue",
+    description: "OCR review workflow",
     icon: FileCheck2,
   },
   {
@@ -46,7 +46,7 @@ export function DashboardOverview() {
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
               AADPP is ready for secure Google SSO, JWT sessions, role-aware navigation,
-              protected API access, client companies, and document upload management.
+              protected API access, client companies, document upload, and Gemini OCR review.
             </p>
           </div>
           <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
