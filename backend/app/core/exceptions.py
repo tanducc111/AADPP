@@ -93,10 +93,15 @@ class StoredFileNotFoundError(AppException):
 
 
 class OcrProcessingError(AppException):
-    def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
+    def __init__(
+        self,
+        message: str,
+        details: dict[str, Any] | None = None,
+        status_code: int = HTTPStatus.BAD_GATEWAY,
+    ) -> None:
         super().__init__(
             message=message,
-            status_code=HTTPStatus.BAD_GATEWAY,
+            status_code=status_code,
             details=details,
         )
 

@@ -1,6 +1,7 @@
 import json
 import logging
 from dataclasses import dataclass
+from http import HTTPStatus
 from pathlib import Path
 from typing import Any
 
@@ -101,7 +102,7 @@ class GeminiOcrService:
             raise
         except Exception as gemini_error:
             logger.warning("Gemini OCR request failed.", exc_info=True)
-            raise OcrProcessingError("Gemini OCR request failed.") from gemini_error
+            raise self._map_gemini_error(gemini_error) from gemini_error
 
         raw_text = (getattr(response, "text", None) or "").strip()
 
@@ -150,3 +151,37 @@ class GeminiOcrService:
             normalized_text = normalized_text.removesuffix("```").strip()
 
         return normalized_text
+
+    def _map_gemini_error(self, gemini_error: Exception) -> OcrProcessingError:
+        provider_status_code = getattr(gemini_error, "status_code", None)
+        error_text = str(gemini_error)
+        normalized_error_text = error_text.lower()
+        error_details = {
+            "provider": "gemini",
+            "model": self.settings.gemini_model,
+            "provider_status_code": provider_status_code,
+        }
+
+        if provider_status_code == HTTPStatus.TOO_MANY_REQUESTS or "resource_exhausted" in normalized_error_text:
+            return OcrProcessingError(
+                "Gemini API quota was exceeded. Check Google AI Studio quota/billing or use an API key/model with available quota.",
+                details={**error_details, "reason": "quota_exceeded"},
+                status_code=HTTPStatus.TOO_MANY_REQUESTS,
+            )
+
+        if provider_status_code in {HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN}:
+            return OcrProcessingError(
+                "Gemini API credentials are invalid or not permitted to use the configured model.",
+                details={**error_details, "reason": "provider_auth_failed"},
+            )
+
+        if provider_status_code == HTTPStatus.BAD_REQUEST:
+            return OcrProcessingError(
+                "Gemini rejected the OCR request. Check the uploaded file type, file size, and configured Gemini model.",
+                details={**error_details, "reason": "provider_rejected_request"},
+            )
+
+        return OcrProcessingError(
+            "Gemini OCR request failed.",
+            details={**error_details, "reason": "provider_request_failed"},
+        )
