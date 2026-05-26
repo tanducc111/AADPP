@@ -18,6 +18,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDocumentStatusLabel, getDocumentTypeLabel } from "@/constants/documents";
+import { useLanguage } from "@/hooks/useLanguage";
 import type {
   DocumentStatusAnalytics,
   DocumentTypeAnalytics,
@@ -42,6 +43,7 @@ export function DashboardAnalyticsCharts({
   topClientCompanies,
   uploadsOverTime,
 }: DashboardAnalyticsChartsProps) {
+  const { translate } = useLanguage();
   const documentTypeData = documentsByType.map((documentTypeCount) => ({
     count: documentTypeCount.count,
     label: getDocumentTypeLabel(documentTypeCount.documentType),
@@ -61,8 +63,8 @@ export function DashboardAnalyticsCharts({
     <section className="grid gap-4 xl:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Documents by Type</CardTitle>
-          <CardDescription>Volume split across accounting document categories.</CardDescription>
+          <CardTitle>{translate("documentsByType")}</CardTitle>
+          <CardDescription>{translate("documentsByTypeDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartFrame isEmpty={documentTypeData.every((chartPoint) => chartPoint.count === 0)}>
@@ -81,8 +83,8 @@ export function DashboardAnalyticsCharts({
 
       <Card>
         <CardHeader>
-          <CardTitle>Documents by Status</CardTitle>
-          <CardDescription>Workflow health from upload through approval.</CardDescription>
+          <CardTitle>{translate("documentsByStatus")}</CardTitle>
+          <CardDescription>{translate("documentsByStatusDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartFrame isEmpty={documentStatusData.length === 0}>
@@ -112,8 +114,8 @@ export function DashboardAnalyticsCharts({
 
       <Card>
         <CardHeader>
-          <CardTitle>Uploads Over Time</CardTitle>
-          <CardDescription>Document intake trend from the upload pipeline.</CardDescription>
+          <CardTitle>{translate("uploadsOverTime")}</CardTitle>
+          <CardDescription>{translate("uploadsOverTimeDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartFrame isEmpty={uploadTrendData.length === 0}>
@@ -138,8 +140,8 @@ export function DashboardAnalyticsCharts({
 
       <Card>
         <CardHeader>
-          <CardTitle>Top Client Companies</CardTitle>
-          <CardDescription>Client companies with the highest document volume.</CardDescription>
+          <CardTitle>{translate("topClientCompanies")}</CardTitle>
+          <CardDescription>{translate("topClientCompaniesDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           {topClientCompanies.length === 0 ? (
@@ -196,12 +198,14 @@ function ChartFrame({ children, isEmpty }: ChartFrameProps) {
 }
 
 function EmptyChartState() {
+  const { translate } = useLanguage();
+
   return (
     <div className="flex h-[260px] items-center justify-center rounded-lg border border-dashed border-border bg-background p-6 text-center">
       <div>
-        <p className="text-sm font-medium text-foreground">No data yet</p>
+        <p className="text-sm font-medium text-foreground">{translate("noDataYet")}</p>
         <p className="mt-2 text-sm text-muted-foreground">
-          Upload and process documents to populate this view.
+          {translate("noDataYetDescription")}
         </p>
       </div>
     </div>

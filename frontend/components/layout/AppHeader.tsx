@@ -3,10 +3,12 @@
 import { Bell, Loader2, LogOut, Menu, Search } from "lucide-react";
 import { toast } from "sonner";
 
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useGlobalLoading } from "@/hooks/useGlobalLoading";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type AppHeaderProps = {
   onOpenSidebar: () => void;
@@ -15,11 +17,12 @@ type AppHeaderProps = {
 export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
   const { currentUser, signOut } = useAuth();
   const { isGlobalLoading } = useGlobalLoading();
+  const { translate } = useLanguage();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-card/95 px-4 backdrop-blur sm:px-6 lg:px-8">
       <Button
-        aria-label="Open navigation"
+        aria-label={translate("openNavigation")}
         className="lg:hidden"
         onClick={onOpenSidebar}
         size="icon"
@@ -32,20 +35,22 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
       <div className="min-w-0 flex-1">
         <div className="hidden max-w-md items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground sm:flex">
           <Search className="h-4 w-4" aria-hidden="true" />
-          <span>Search documents, companies, or audit events</span>
+          <span>{translate("searchPlaceholder")}</span>
         </div>
       </div>
 
       {isGlobalLoading ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-          Syncing
+          {translate("syncing")}
         </div>
       ) : null}
 
+      <LanguageToggle />
+
       <Button
-        aria-label="Show notifications"
-        onClick={() => toast.info("Notifications are ready for future workflows.")}
+        aria-label={translate("showNotifications")}
+        onClick={() => toast.info(translate("showNotifications"))}
         size="icon"
         type="button"
         variant="outline"
@@ -81,7 +86,7 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
           </div>
           <Badge variant="outline">{currentUser.role}</Badge>
           <Button
-            aria-label="Log out"
+            aria-label={translate("logOut")}
             onClick={() => {
               void signOut();
             }}

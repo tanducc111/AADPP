@@ -4,6 +4,7 @@ import { Activity } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "@/hooks/useLanguage";
 import type { ActivityLog } from "@/types/dashboard";
 import { formatDateTime } from "@/utils/formatDate";
 
@@ -12,19 +13,21 @@ type RecentActivityPanelProps = {
 };
 
 export function RecentActivityPanel({ recentActivities }: RecentActivityPanelProps) {
+  const { translate } = useLanguage();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Activity className="h-4 w-4 text-primary" aria-hidden="true" />
-          Recent Activity
+          {translate("recentActivity")}
         </CardTitle>
-        <CardDescription>Latest uploads, OCR events, approvals, and audit actions.</CardDescription>
+        <CardDescription>{translate("recentActivityDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         {recentActivities.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
-            <p className="text-sm font-medium text-foreground">No activity yet</p>
+            <p className="text-sm font-medium text-foreground">{translate("noDataYet")}</p>
             <p className="mt-2 text-sm text-muted-foreground">
               Activity logs will appear as users work through documents.
             </p>

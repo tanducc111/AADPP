@@ -13,9 +13,11 @@ import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardAnalytics } from "@/hooks/useDashboardAnalytics";
 import { useDashboardSummary } from "@/hooks/useDashboardSummary";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export function DashboardOverview() {
   const { currentUser } = useAuth();
+  const { translate } = useLanguage();
   const {
     dashboardSummary,
     isLoadingSummary,
@@ -43,23 +45,22 @@ export function DashboardOverview() {
       <div className="flex flex-col gap-6">
         <section className="flex flex-col gap-3 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
-            <Badge variant="secondary">Analytics</Badge>
+            <Badge variant="secondary">{translate("analytics")}</Badge>
             <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">
-              Accounting operations dashboard
+              {translate("dashboardTitle")}
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Track document intake, Gemini OCR outcomes, review backlog, approvals, client company
-              volume, and recent audit activity in one workspace.
+              {translate("dashboardDescription")}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />
-              {currentUser?.role ?? "Authenticated"}
+              {currentUser?.role ?? translate("authenticated")}
             </div>
             <Button onClick={handleRefreshDashboard} type="button" variant="outline">
               <RefreshCcw className="h-4 w-4" aria-hidden="true" />
-              Refresh
+              {translate("refresh")}
             </Button>
           </div>
         </section>
@@ -71,7 +72,7 @@ export function DashboardOverview() {
                 {summaryErrorMessage ?? analyticsErrorMessage}
               </p>
               <Button onClick={handleRefreshDashboard} type="button" variant="outline">
-                Retry
+                {translate("retry")}
               </Button>
             </div>
           </Card>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/hooks/useLanguage";
 import { cn } from "@/lib/cn";
 import type { NavigationItem } from "@/types/navigation";
 
@@ -16,6 +17,7 @@ type AppSidebarProps = {
 
 export function AppSidebar({ isMobileOpen, navigationItems, onClose }: AppSidebarProps) {
   const pathname = usePathname();
+  const { translate } = useLanguage();
   const activeNavigationHref = navigationItems
     .filter(
       (navigationItem) =>
@@ -46,11 +48,13 @@ export function AppSidebar({ isMobileOpen, navigationItems, onClose }: AppSideba
             </span>
             <span>
               <span className="block text-sm font-semibold text-foreground">AADPP</span>
-              <span className="block text-xs text-muted-foreground">Accounting AI Platform</span>
+              <span className="block text-xs text-muted-foreground">
+                {translate("accountingAiPlatform")}
+              </span>
             </span>
           </Link>
           <Button
-            aria-label="Close navigation"
+            aria-label={translate("closeNavigation")}
             className="lg:hidden"
             onClick={onClose}
             size="icon"
@@ -79,15 +83,17 @@ export function AppSidebar({ isMobileOpen, navigationItems, onClose }: AppSideba
                 onClick={onClose}
               >
                 <NavigationIcon className="h-4 w-4" aria-hidden="true" />
-                {navigationItem.label}
+                {navigationItem.translationKey ? translate(navigationItem.translationKey) : navigationItem.label}
               </Link>
             );
           })}
         </nav>
 
         <div className="border-t border-border p-4">
-          <p className="text-xs font-medium uppercase text-muted-foreground">Environment</p>
-          <p className="mt-1 text-sm text-foreground">Development foundation</p>
+          <p className="text-xs font-medium uppercase text-muted-foreground">
+            {translate("environment")}
+          </p>
+          <p className="mt-1 text-sm text-foreground">{translate("developmentFoundation")}</p>
         </div>
       </aside>
     </>

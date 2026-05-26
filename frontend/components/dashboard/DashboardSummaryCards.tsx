@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "@/hooks/useLanguage";
 import type { DashboardSummary } from "@/types/dashboard";
 import { formatNumber, formatPercentage } from "@/utils/formatNumber";
 
@@ -18,41 +19,42 @@ type DashboardSummaryCardsProps = {
 };
 
 export function DashboardSummaryCards({ dashboardSummary }: DashboardSummaryCardsProps) {
+  const { translate } = useLanguage();
   const summaryCards = [
     {
-      label: "Total Documents",
+      label: translate("totalDocuments"),
       value: formatNumber(dashboardSummary.totalDocuments),
-      description: `${formatNumber(dashboardSummary.totalOcrResults)} OCR results stored`,
+      description: `${formatNumber(dashboardSummary.totalOcrResults)} ${translate("totalDocumentsDescription")}`,
       icon: FileText,
     },
     {
-      label: "Pending Review",
+      label: translate("pendingReview"),
       value: formatNumber(dashboardSummary.ocrDoneDocuments),
-      description: "OCR done and waiting for review",
+      description: translate("pendingReviewDescription"),
       icon: FileCheck2,
     },
     {
-      label: "Approved Documents",
+      label: translate("approvedDocuments"),
       value: formatNumber(dashboardSummary.approvedDocuments),
-      description: `${formatNumber(dashboardSummary.reviewedDocuments)} reviewed but not approved`,
+      description: `${formatNumber(dashboardSummary.reviewedDocuments)} ${translate("approvedDocumentsDescription")}`,
       icon: CheckCircle2,
     },
     {
-      label: "OCR Success Rate",
+      label: translate("ocrSuccessRate"),
       value: formatPercentage(dashboardSummary.ocrSuccessRate),
-      description: "Completed OCR outcomes",
+      description: translate("ocrSuccessRateDescription"),
       icon: Gauge,
     },
     {
-      label: "Failed Documents",
+      label: translate("failedDocuments"),
       value: formatNumber(dashboardSummary.failedDocuments),
-      description: "Needs retry or manual inspection",
+      description: translate("failedDocumentsDescription"),
       icon: TriangleAlert,
     },
     {
-      label: "Active Client Companies",
+      label: translate("activeClientCompanies"),
       value: formatNumber(dashboardSummary.activeClientCompanies),
-      description: `${formatNumber(dashboardSummary.totalClientCompanies)} total visible companies`,
+      description: `${formatNumber(dashboardSummary.totalClientCompanies)} ${translate("activeClientCompaniesDescription")}`,
       icon: Building2,
     },
   ];

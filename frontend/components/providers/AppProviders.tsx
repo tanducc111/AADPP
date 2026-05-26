@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GlobalLoadingProvider } from "@/components/providers/GlobalLoadingProvider";
+import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { ToastProvider } from "@/components/providers/ToastProvider";
 
 type AppProvidersProps = {
@@ -16,12 +17,14 @@ export function AppProviders({ children }: AppProvidersProps) {
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
-      <AuthProvider>
-        <GlobalLoadingProvider>
-          {children}
-          <ToastProvider />
-        </GlobalLoadingProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <GlobalLoadingProvider>
+            {children}
+            <ToastProvider />
+          </GlobalLoadingProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </GoogleOAuthProvider>
   );
 }
