@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "AADPP OCR Region Selector",
+  "description": "Select a document region in AADPP and send it to OCR.",
+  "version": "0.1.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AADPP OCR Region"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["activeTab", "scripting", "storage"]
+}
