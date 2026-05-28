@@ -11,6 +11,7 @@ import { DocumentBreadcrumbs } from "@/components/documents/DocumentBreadcrumbs"
 import { DocumentFilePreview } from "@/components/documents/DocumentFilePreview";
 import { DocumentStatusBadge } from "@/components/documents/DocumentStatusBadge";
 import { DocumentTypeBadge } from "@/components/documents/DocumentTypeBadge";
+import { OcrRegionController } from "@/components/documents/OcrRegionController";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +41,7 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
   const [isLoadingDocument, setIsLoadingDocument] = useState(true);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [previewElement, setPreviewElement] = useState<HTMLElement | null>(null);
   const canDeleteDocument =
     Boolean(documentDetail && currentUser?.role === "ADMIN") ||
     Boolean(
@@ -54,6 +56,9 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
   const canRunOcr =
     canUseDocumentWorkflow &&
     Boolean(documentDetail && (documentDetail.status === "UPLOADED" || documentDetail.status === "FAILED"));
+  const canRunRegionOcr =
+    canUseDocumentWorkflow &&
+    Boolean(documentDetail && isRegionOcrPreviewSupported(documentDetail.mimeType));
   const canViewOcrResult =
     canUseDocumentWorkflow &&
     Boolean(
@@ -154,6 +159,9 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
                       </Link>
                     </Button>
                   ) : null}
+                  {documentDetail && canRunRegionOcr ? (
+                    <OcrRegionController documentId={documentDetail.id} previewElement={previewElement} />
+                  ) : null}
                   {canViewOcrResult ? (
                     <Button asChild type="button" variant="outline">
                       <Link href={`${ROUTES.documents}/${documentDetail.id}/review`}>
@@ -203,7 +211,10 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
                   <CardDescription>Original uploaded source file.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <DocumentFilePreview documentDetail={documentDetail} />
+                  <DocumentFilePreview
+                    documentDetail={documentDetail}
+                    onPreviewElementChange={setPreviewElement}
+                  />
                 </CardContent>
               </Card>
 
@@ -267,6 +278,10 @@ export function DocumentDetailPageContent({ documentId }: DocumentDetailPageCont
       />
     </DashboardShell>
   );
+}
+
+function isRegionOcrPreviewSupported(mimeType: string) {
+  return mimeType === "application/pdf" || mimeType === "image/jpeg" || mimeType === "image/png";
 }
 
 type DetailFieldProps = {

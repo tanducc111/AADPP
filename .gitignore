@@ -1,6 +1,8 @@
 # Dependencies
 node_modules/
 frontend/node_modules/
+extensions/chrome-extension/node_modules/
+extensions/chrome-extension/dist/
 
 # Next.js
 frontend/.next/

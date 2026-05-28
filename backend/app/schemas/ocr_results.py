@@ -94,6 +94,36 @@ class GeminiOcrResponse(BaseModel):
         return normalized_value or None
 
 
+class GeminiOcrRegionResponse(BaseModel):
+    text: str = ""
+    confidence_score: Decimal | None = Field(default=None, ge=0, le=1)
+
+    @field_validator("text", mode="before")
+    @classmethod
+    def normalize_text(cls, raw_value: str | None) -> str:
+        if raw_value is None:
+            return ""
+
+        return str(raw_value).strip()
+
+
+class OcrRegionRequest(BaseModel):
+    x: float = Field(ge=0)
+    y: float = Field(ge=0)
+    width: float = Field(gt=0)
+    height: float = Field(gt=0)
+    display_width: float = Field(gt=0)
+    display_height: float = Field(gt=0)
+    page: int = Field(default=1, ge=1)
+
+
+class OcrRegionResponse(BaseModel):
+    success: bool = True
+    text: str
+    raw_json: dict[str, Any] | None = None
+    confidence_score: Decimal | None = Field(default=None, ge=0, le=1)
+
+
 class OcrResultRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

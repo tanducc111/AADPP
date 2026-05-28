@@ -1,16 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { downloadDocument } from "@/services/documentService";
 import type { DocumentDetail } from "@/types/documents";
 
 type DocumentFilePreviewProps = {
   documentDetail: DocumentDetail;
+  onPreviewElementChange?: (previewElement: HTMLElement | null) => void;
 };
 
-export function DocumentFilePreview({ documentDetail }: DocumentFilePreviewProps) {
+export function DocumentFilePreview({
+  documentDetail,
+  onPreviewElementChange,
+}: DocumentFilePreviewProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const setPreviewElement = useCallback(
+    (previewElement: HTMLElement | null) => {
+      onPreviewElementChange?.(previewElement);
+    },
+    [onPreviewElementChange],
+  );
 
   useEffect(() => {
     let objectUrl: string | null = null;
@@ -51,34 +61,57 @@ export function DocumentFilePreview({ documentDetail }: DocumentFilePreviewProps
     };
   }, [documentDetail]);
 
+  useEffect(() => {
+    return () => {
+      onPreviewElementChange?.(null);
+    };
+  }, [onPreviewElementChange]);
+
   if (!isPreviewSupported(documentDetail.mimeType)) {
     return (
-      <div className="flex min-h-72 items-center justify-center rounded-lg border border-dashed border-primary/20 bg-gradient-to-br from-white to-blue-50/60 p-6 text-center text-sm text-muted-foreground">
+      <div
+        className="flex min-h-72 items-center justify-center rounded-lg border border-dashed border-primary/20 bg-gradient-to-br from-white to-blue-50/60 p-6 text-center text-sm text-muted-foreground"
+        data-aadpp-ocr-preview-target="true"
+        ref={setPreviewElement}
+      >
         Preview is not available for this file type.
       </div>
     );
   }
 
   if (!previewUrl) {
-    return <div className="shimmer-surface min-h-72 rounded-lg" />;
-  }
-
-  if (documentDetail.mimeType === "application/pdf") {
     return (
-      <iframe
-        className="h-[560px] w-full rounded-lg border border-border bg-white shadow-inner"
-        src={previewUrl}
-        title={documentDetail.originalFileName}
+      <div
+        className="shimmer-surface min-h-72 rounded-lg"
+        data-aadpp-ocr-preview-target="true"
+        ref={setPreviewElement}
       />
     );
   }
 
+  if (documentDetail.mimeType === "application/pdf") {
+    return (
+      <div data-aadpp-ocr-preview-target="true" ref={setPreviewElement}>
+        <iframe
+          className="h-[560px] w-full rounded-lg border border-border bg-white shadow-inner"
+          src={previewUrl}
+          title={documentDetail.originalFileName}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-72 items-center justify-center rounded-lg border border-border bg-slate-950 p-3 shadow-inner">
+    <div
+      className="flex min-h-72 items-center justify-center rounded-lg border border-border bg-slate-950 p-3 shadow-inner"
+      data-aadpp-ocr-preview-target="true"
+    >
       {/* eslint-disable-next-line @next/next/no-img-element -- Blob previews cannot use the Next image optimizer. */}
       <img
         alt={documentDetail.originalFileName}
         className="max-h-[560px] max-w-full rounded-md object-contain"
+        data-aadpp-ocr-preview-target="true"
+        ref={setPreviewElement}
         src={previewUrl}
       />
     </div>

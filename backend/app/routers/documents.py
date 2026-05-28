@@ -19,7 +19,7 @@ from app.schemas.documents import (
     DocumentUploadForm,
     SortOrder,
 )
-from app.schemas.ocr_results import OcrResultRead, OcrResultUpdate
+from app.schemas.ocr_results import OcrRegionRequest, OcrRegionResponse, OcrResultRead, OcrResultUpdate
 from app.services.document_service import DocumentService
 from app.services.ocr_workflow_service import OcrWorkflowService
 
@@ -144,6 +144,23 @@ async def run_document_ocr(
     ocr_workflow_service = OcrWorkflowService(database_session)
 
     return ocr_workflow_service.run_ocr(document_id, current_user)
+
+
+@router.post(
+    "/{document_id}/ocr-region",
+    response_model=OcrRegionResponse,
+    summary="Run Gemini OCR for a selected document region",
+    description="Crop a selected preview region and run Gemini OCR only on that cropped area.",
+)
+async def run_document_region_ocr(
+    document_id: UUID,
+    region_request: OcrRegionRequest,
+    current_user: User = Depends(get_current_user),
+    database_session: Session = Depends(get_db_session),
+) -> OcrRegionResponse:
+    ocr_workflow_service = OcrWorkflowService(database_session)
+
+    return ocr_workflow_service.run_region_ocr(document_id, region_request, current_user)
 
 
 @router.get(

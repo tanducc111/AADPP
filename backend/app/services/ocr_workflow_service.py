@@ -16,10 +16,17 @@ from app.models.ocr_result import LineItem, OcrResult
 from app.models.user import User
 from app.repositories.document_repository import DocumentRepository
 from app.repositories.ocr_result_repository import OcrResultRepository
-from app.schemas.ocr_results import GeminiOcrResponse, OcrResultRead, OcrResultUpdate
+from app.schemas.ocr_results import (
+    GeminiOcrResponse,
+    OcrRegionRequest,
+    OcrRegionResponse,
+    OcrResultRead,
+    OcrResultUpdate,
+)
 from app.services.activity_log_service import ActivityLogAction, ActivityLogService
 from app.services.file_storage_service import FileStorageService
 from app.services.gemini_ocr_service import GeminiOcrService
+from app.services.region_crop_service import RegionCropService
 from app.utils.datetime import utc_now
 
 
@@ -31,6 +38,7 @@ class OcrWorkflowService:
         self.activity_log_service = ActivityLogService(database_session)
         self.file_storage_service = FileStorageService()
         self.gemini_ocr_service = GeminiOcrService()
+        self.region_crop_service = RegionCropService()
 
     def run_ocr(self, document_id: uuid.UUID, current_user: User) -> OcrResultRead:
         document = self._get_accessible_document(document_id, current_user)
@@ -86,6 +94,60 @@ class OcrWorkflowService:
                 raise
 
             raise OcrProcessingError("OCR processing failed.") from ocr_error
+
+    def run_region_ocr(
+        self,
+        document_id: uuid.UUID,
+        region_request: OcrRegionRequest,
+        current_user: User,
+    ) -> OcrRegionResponse:
+        document = self._get_accessible_document(document_id, current_user)
+        cropped_region_file = None
+
+        try:
+            stored_file_path = self.file_storage_service.get_stored_file_path(document.file_path)
+            cropped_region_file = self.region_crop_service.crop_document_region(
+                source_file_path=stored_file_path,
+                mime_type=document.mime_type,
+                region_request=region_request,
+            )
+            gemini_result = self.gemini_ocr_service.extract_region_text(
+                file_path=cropped_region_file.path,
+                mime_type=cropped_region_file.mime_type,
+            )
+            parsed_response = gemini_result.parsed_response
+            self.activity_log_service.record_document_event(
+                action=ActivityLogAction.OCR_REGION,
+                user_id=current_user.id,
+                document_id=document.id,
+                description=f"Ran region OCR for document {document.original_file_name}.",
+                event_metadata={
+                    **self._build_document_event_metadata(document),
+                    "page": region_request.page,
+                    "region_x": int(region_request.x),
+                    "region_y": int(region_request.y),
+                    "region_width": int(region_request.width),
+                    "region_height": int(region_request.height),
+                    "crop_width": cropped_region_file.width,
+                    "crop_height": cropped_region_file.height,
+                },
+            )
+            self.database_session.commit()
+
+            return OcrRegionResponse(
+                text=parsed_response.text,
+                raw_json=gemini_result.raw_json,
+                confidence_score=parsed_response.confidence_score,
+            )
+        except AppException:
+            self.database_session.rollback()
+            raise
+        except Exception as region_error:
+            self.database_session.rollback()
+            raise OcrProcessingError("OCR region processing failed.") from region_error
+        finally:
+            if cropped_region_file:
+                self.region_crop_service.delete_cropped_region(cropped_region_file)
 
     def get_ocr_result(self, document_id: uuid.UUID, current_user: User) -> OcrResultRead:
         self._get_accessible_document(document_id, current_user)

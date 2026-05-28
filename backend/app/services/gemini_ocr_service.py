@@ -9,7 +9,7 @@ from pydantic import ValidationError
 
 from app.core.config import get_settings
 from app.core.exceptions import OcrProcessingError
-from app.schemas.ocr_results import GeminiOcrResponse
+from app.schemas.ocr_results import GeminiOcrRegionResponse, GeminiOcrResponse
 
 logger = logging.getLogger(__name__)
 
@@ -61,12 +61,38 @@ JSON kỳ vọng:
 }
 """.strip()
 
+OCR_REGION_PROMPT = """
+You are an OCR extraction engine for Vietnamese accounting documents.
+
+Read only the attached cropped document region and return JSON only.
+Do not return markdown or explanations.
+
+Expected JSON:
+{
+  "text": "all visible text in reading order",
+  "confidence_score": 0.0
+}
+
+Rules:
+- Preserve Vietnamese text as accurately as possible.
+- Use line breaks when they help readability.
+- If no text is visible, return an empty string.
+- confidence_score must be between 0 and 1.
+""".strip()
+
 
 @dataclass(frozen=True)
 class GeminiOcrResult:
     raw_text: str
     raw_json: dict[str, Any]
     parsed_response: GeminiOcrResponse
+
+
+@dataclass(frozen=True)
+class GeminiOcrRegionResult:
+    raw_text: str
+    raw_json: dict[str, Any]
+    parsed_response: GeminiOcrRegionResponse
 
 
 class GeminiOcrService:
@@ -120,6 +146,58 @@ class GeminiOcrService:
             ) from validation_error
 
         return GeminiOcrResult(
+            raw_text=raw_text,
+            raw_json=raw_json,
+            parsed_response=parsed_response,
+        )
+
+    def extract_region_text(self, file_path: Path, mime_type: str) -> GeminiOcrRegionResult:
+        if not self.settings.gemini_api_key:
+            raise OcrProcessingError("Gemini API key is not configured.")
+
+        try:
+            from google import genai
+            from google.genai import types
+
+            client = genai.Client(api_key=self.settings.gemini_api_key)
+            response = client.models.generate_content(
+                model=self.settings.gemini_model,
+                contents=[
+                    types.Part.from_bytes(
+                        data=file_path.read_bytes(),
+                        mime_type=mime_type,
+                    ),
+                    OCR_REGION_PROMPT,
+                ],
+                config=types.GenerateContentConfig(
+                    temperature=self.settings.gemini_temperature,
+                    max_output_tokens=1024,
+                    response_mime_type="application/json",
+                    response_schema=GeminiOcrRegionResponse,
+                ),
+            )
+        except OcrProcessingError:
+            raise
+        except Exception as gemini_error:
+            logger.warning("Gemini region OCR request failed.", exc_info=True)
+            raise self._map_gemini_error(gemini_error) from gemini_error
+
+        raw_text = (getattr(response, "text", None) or "").strip()
+
+        if not raw_text:
+            raise OcrProcessingError("Gemini returned an empty OCR response.")
+
+        raw_json = self._parse_json_response(raw_text)
+
+        try:
+            parsed_response = GeminiOcrRegionResponse.model_validate(raw_json)
+        except ValidationError as validation_error:
+            raise OcrProcessingError(
+                "Gemini OCR response did not match the expected schema.",
+                details={"errors": validation_error.errors()},
+            ) from validation_error
+
+        return GeminiOcrRegionResult(
             raw_text=raw_text,
             raw_json=raw_json,
             parsed_response=parsed_response,

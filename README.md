@@ -1,98 +1,168 @@
 # AADPP
 
-AADPP is an enterprise Accounting AI Document Processing Platform. This repository contains a full-stack architecture foundation with Google SSO authentication, JWT session handling, role-based access control, client company management, document upload and management, Gemini OCR review workflows, dashboard analytics, admin audit logs, a Next.js dashboard frontend, a FastAPI backend, PostgreSQL persistence, SQLAlchemy models, Alembic migrations, and Docker-ready local services.
+**AADPP** is an AI-powered Accounting Document Processing Platform built for accounting service companies that manage documents for multiple client companies. The platform supports Google SSO, JWT sessions, role-based access control, client company management, secure document upload, Gemini OCR extraction, human review, approval workflow, analytics dashboards, audit logs, and a Chrome Extension MVP for OCR region selection.
+
+The goal of AADPP is to turn manual accounting document intake into a controlled, auditable, AI-assisted workflow.
+
+## Core Capabilities
+
+- Google SSO authentication with backend-verified Google ID tokens
+- JWT-protected API requests with ADMIN and ACCOUNTANT roles
+- Client company management with search, pagination, status control, and RBAC
+- Secure PDF/JPG/JPEG/PNG upload with local backend storage
+- Document list, detail, preview, download, and deletion workflows
+- Gemini OCR for structured accounting data extraction
+- OCR review UI with editable fields and line items
+- Approval workflow with locked approved results
+- Dashboard analytics for document volume, OCR outcomes, status distribution, and client company activity
+- Admin user management and audit log browsing
+- Chrome Extension MVP for selecting a document region and running OCR on that region only
+- Docker-ready local development stack
 
 ## Tech Stack
 
-- Frontend: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui-style components, lucide-react, Axios, react-hook-form, Zod, Recharts, Google OAuth
-- Backend: FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL, JWT utilities, Google token verification, Google GenAI SDK
-- DevOps: Docker, Docker Compose, environment-based configuration
+| Layer           | Technology                                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------- |
+| Frontend        | Next.js App Router, TypeScript, Tailwind CSS, shadcn-style UI primitives, Framer Motion, Recharts |
+| API Client      | Axios with centralized auth and error handling                                                    |
+| Forms           | React Hook Form, Zod                                                                              |
+| Authentication  | Google OAuth, backend JWT                                                                         |
+| Backend         | FastAPI, Pydantic, SQLAlchemy, Alembic                                                            |
+| Database        | PostgreSQL                                                                                        |
+| AI OCR          | Google GenAI SDK with Gemini                                                                      |
+| File Processing | Pillow, pdf2image, Poppler                                                                        |
+| DevOps          | Docker, Docker Compose                                                                            |
+| Extension       | Chrome Manifest V3, TypeScript                                                                    |
 
-## Local Setup
+## System Roles
 
-### Frontend
+| Role       | Access                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| ADMIN      | Global dashboard, all client companies, all documents, OCR/review/approve any document, user management, audit logs |
+| ACCOUNTANT | Active client companies, own uploaded documents, OCR/review/approve own documents, scoped dashboard metrics         |
 
-```bash
-cd frontend
-npm install
-npm run dev
+Backend RBAC is the source of truth. Frontend route guards only improve user experience.
+
+## Quick Start With Docker
+
+Create environment files:
+
+```powershell
+copy backend\.env.example backend\.env
+copy frontend\.env.example frontend\.env.local
 ```
 
-Frontend runs at [http://localhost:3000](http://localhost:3000).
+Update the required values:
 
-Required frontend environment variables:
-
-```bash
+```env
+# frontend/.env.local
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
 ```
 
-### Backend
-
-Create a backend environment file:
-
-```bash
-cd backend
-cp .env.example .env
-```
-
-Install Python dependencies and run the API:
-
-```bash
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
-
-Backend runs at [http://localhost:8000](http://localhost:8000). Swagger docs are available at [http://localhost:8000/docs](http://localhost:8000/docs).
-
-Run database migrations:
-
-```bash
-alembic upgrade head
-```
-
-Required backend environment variables:
-
-```bash
-GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+```env
+# backend/.env
+GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
 JWT_SECRET_KEY=replace-with-a-secure-random-secret
-JWT_ALGORITHM=HS256
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
-MAX_UPLOAD_SIZE_MB=10
-UPLOAD_DIR=uploads
 GEMINI_API_KEY=your-gemini-api-key
-GEMINI_MODEL=gemini-2.0-flash
-GEMINI_TEMPERATURE=0
-GEMINI_MAX_OUTPUT_TOKENS=4096
 ```
 
-### Docker Compose
+Start the stack:
 
-```bash
+```powershell
 docker compose up --build
+```
+
+Run migrations:
+
+```powershell
+docker compose exec backend alembic upgrade head
 ```
 
 Services:
 
 - Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend: [http://localhost:8000](http://localhost:8000)
-- Swagger: [http://localhost:8000/docs](http://localhost:8000/docs)
+- Backend API: [http://localhost:8000](http://localhost:8000)
+- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
 - PostgreSQL: `localhost:5432`
 
-## Folder Structure
+## Local Development
+
+### Frontend
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Useful checks:
+
+```powershell
+npm run typecheck
+npm run lint
+npm run build
+```
+
+### Backend
+
+```powershell
+cd backend
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+Useful checks:
+
+```powershell
+python -m compileall app alembic
+alembic upgrade head
+```
+
+### Chrome Extension
+
+```powershell
+cd extensions/chrome-extension
+npm install
+npm run build
+```
+
+Load `extensions/chrome-extension/dist` in Chrome through `chrome://extensions` with Developer Mode enabled.
+
+## Environment Variables
+
+### Frontend
+
+| Variable                       | Purpose                                        |
+| ------------------------------ | ---------------------------------------------- |
+| `NEXT_PUBLIC_API_BASE_URL`     | Public frontend API base URL                   |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth Web Client ID used by the browser |
+
+### Backend
+
+| Variable                          | Purpose                                        |
+| --------------------------------- | ---------------------------------------------- |
+| `APP_NAME`                        | FastAPI application name                       |
+| `ENVIRONMENT`                     | Runtime environment                            |
+| `API_V1_PREFIX`                   | API prefix, usually `/api/v1`                  |
+| `DATABASE_URL`                    | PostgreSQL SQLAlchemy connection string        |
+| `GOOGLE_CLIENT_ID`                | Google OAuth Web Client ID verified by backend |
+| `JWT_SECRET_KEY`                  | Secret used to sign JWT access tokens          |
+| `JWT_ALGORITHM`                   | JWT signing algorithm                          |
+| `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | Access token lifetime                          |
+| `CORS_ORIGINS`                    | Allowed browser origins                        |
+| `MAX_UPLOAD_SIZE_MB`              | Maximum document upload size                   |
+| `UPLOAD_DIR`                      | Backend upload storage root                    |
+| `GEMINI_API_KEY`                  | Backend-only Gemini API key                    |
+| `GEMINI_MODEL`                    | Gemini model used for OCR                      |
+| `GEMINI_TEMPERATURE`              | OCR generation temperature                     |
+| `GEMINI_MAX_OUTPUT_TOKENS`        | Maximum OCR response tokens                    |
+
+## Project Structure
 
 ```text
 AADPP/
-  frontend/
-    app/
-    components/
-    constants/
-    hooks/
-    lib/
-    services/
-    styles/
-    types/
-    utils/
   backend/
     alembic/
     app/
@@ -106,21 +176,80 @@ AADPP/
       services/
       utils/
       main.py
+  frontend/
+    app/
+    components/
+    constants/
+    hooks/
+    lib/
+    services/
+    styles/
+    types/
+    utils/
   docs/
+    architecture.md
+    demo-guide.md
+  extensions/
+    chrome-extension/
+      public/
+      scripts/
+      src/
 ```
 
-## Architecture Notes
+## Main User Flow
 
-- Frontend state is organized through provider boundaries for auth, global loading, and toast notifications.
-- API access is centralized through a typed Axios client.
-- Google SSO exchanges a frontend Google ID token for a backend-issued JWT.
-- Client company management is available at `/clients` with ADMIN CRUD and ACCOUNTANT read-only access to active companies.
-- Document management is available at `/documents` with upload, metadata list/detail, download, delete, file validation, and RBAC enforcement.
-- Gemini OCR is available from document detail pages and review pages with structured accounting extraction, editable line items, review, and approval workflow.
-- Dashboard analytics are available at `/dashboard` with document counts, OCR success rate, upload trends, top client companies, and recent activities.
-- Admin audit logs are available at `/admin/logs` for ADMIN users with search, filters, pagination, and date ranges.
-- Protected frontend routes load the current user from `/api/v1/auth/me`.
-- Backend configuration is loaded from environment variables with Pydantic Settings.
-- SQLAlchemy models use UUID primary keys, timezone-aware timestamps, enums, relationships, and indexes on searchable fields.
-- Alembic is configured with migrations for the core accounting document schema, Google SSO user fields, client company management fields, document upload fields, audit log retention, and OCR review workflow fields.
-- JWT and RBAC are implemented as reusable backend dependencies.
+1. User signs in with Google SSO.
+2. Backend verifies the Google ID token and returns a JWT access token.
+3. User selects or creates a client company.
+4. User uploads an accounting document.
+5. Backend validates and stores the original file securely.
+6. User runs Gemini OCR.
+7. Extracted accounting data is saved as an OCR result with line items.
+8. User reviews and corrects OCR data.
+9. User approves the document.
+10. Dashboard and audit logs reflect the full workflow.
+
+## API Highlights
+
+- `POST /api/v1/auth/google`
+- `GET /api/v1/auth/me`
+- `GET /api/v1/client-companies`
+- `POST /api/v1/documents/upload`
+- `GET /api/v1/documents`
+- `POST /api/v1/documents/{document_id}/ocr`
+- `GET /api/v1/documents/{document_id}/ocr-result`
+- `PUT /api/v1/documents/{document_id}/ocr-result`
+- `POST /api/v1/documents/{document_id}/approve`
+- `POST /api/v1/documents/{document_id}/ocr-region`
+- `GET /api/v1/dashboard/summary`
+- `GET /api/v1/admin/activity-logs`
+
+OpenAPI documentation is available at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+## Security Notes
+
+- Secrets are never hardcoded in source code.
+- Gemini API keys are backend-only and are never exposed to the frontend.
+- Backend validates Google ID tokens server-side.
+- Every protected API route requires JWT authentication.
+- RBAC is enforced on the backend.
+- Uploaded file names are not trusted for storage.
+- Stored file paths are not exposed to the frontend.
+- OCR region coordinates are validated server-side before cropping.
+- Temporary cropped files are cleaned up after OCR.
+
+## Demo Readiness
+
+Recommended demo route:
+
+```text
+Login -> Dashboard -> Client Companies -> Upload Document -> Document Detail
+-> Run OCR -> Review OCR -> Approve -> Admin Users -> Audit Logs
+-> Chrome Extension Region OCR
+```
+
+See [docs/demo-guide.md](docs/demo-guide.md) for a presentation-focused demo plan.
+
+## Current Scope
+
+AADPP is implemented as a local demo-ready enterprise SaaS MVP. It focuses on the complete accounting document workflow, AI-assisted OCR, operational analytics, RBAC, and auditability. Future production work could add cloud object storage, background OCR queues, multi-page PDF region mapping, advanced extraction confidence review, deployment infrastructure, and automated test coverage.

@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/components/clients/ConfirmDialog";
 import { DocumentBreadcrumbs } from "@/components/documents/DocumentBreadcrumbs";
 import { DocumentFilePreview } from "@/components/documents/DocumentFilePreview";
 import { DocumentStatusBadge } from "@/components/documents/DocumentStatusBadge";
+import { OcrRegionController } from "@/components/documents/OcrRegionController";
 import { OcrReviewForm } from "@/components/documents/OcrReviewForm";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { SectionHeader } from "@/components/ui/section-header";
 import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/hooks/useAuth";
 import { useOcrResult } from "@/hooks/useOcrResult";
 import { getDocument } from "@/services/documentService";
 import { approveDocumentOcrResult, updateDocumentOcrResult } from "@/services/ocrService";
@@ -31,13 +33,22 @@ type DocumentReviewPageContentProps = {
 
 export function DocumentReviewPageContent({ documentId }: DocumentReviewPageContentProps) {
   const router = useRouter();
+  const { currentUser } = useAuth();
   const { isLoadingOcrResult, ocrErrorMessage, ocrResult, setOcrResult } = useOcrResult(documentId);
   const [documentDetail, setDocumentDetail] = useState<DocumentDetail | null>(null);
   const [isLoadingDocument, setIsLoadingDocument] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
+  const [previewElement, setPreviewElement] = useState<HTMLElement | null>(null);
   const isApproved = documentDetail?.status === "APPROVED";
+  const canRunRegionOcr =
+    Boolean(
+      documentDetail &&
+        currentUser &&
+        isRegionOcrPreviewSupported(documentDetail.mimeType) &&
+        (currentUser.role === "ADMIN" || documentDetail.uploadedByUserId === currentUser.id),
+    );
 
   useEffect(() => {
     let shouldUpdateState = true;
@@ -114,13 +125,18 @@ export function DocumentReviewPageContent({ documentId }: DocumentReviewPageCont
 
         <SectionHeader
           actions={
-            <Button
-              onClick={() => router.push(`${ROUTES.documents}/${documentId}`)}
-              type="button"
-              variant="outline"
-            >
-              Back to Document
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              {documentDetail && canRunRegionOcr ? (
+                <OcrRegionController documentId={documentDetail.id} previewElement={previewElement} />
+              ) : null}
+              <Button
+                onClick={() => router.push(`${ROUTES.documents}/${documentId}`)}
+                type="button"
+                variant="outline"
+              >
+                Back to Document
+              </Button>
+            </div>
           }
           badge="OCR Review"
           description={
@@ -145,7 +161,10 @@ export function DocumentReviewPageContent({ documentId }: DocumentReviewPageCont
                 <CardDescription>Compare the source file with the extracted accounting data.</CardDescription>
               </CardHeader>
               <CardContent>
-                <DocumentFilePreview documentDetail={documentDetail} />
+                <DocumentFilePreview
+                  documentDetail={documentDetail}
+                  onPreviewElementChange={setPreviewElement}
+                />
               </CardContent>
             </Card>
 
@@ -209,4 +228,8 @@ export function DocumentReviewPageContent({ documentId }: DocumentReviewPageCont
       />
     </DashboardShell>
   );
+}
+
+function isRegionOcrPreviewSupported(mimeType: string) {
+  return mimeType === "application/pdf" || mimeType === "image/jpeg" || mimeType === "image/png";
 }

@@ -7,6 +7,12 @@ import type {
   OcrResultApiResponse,
   OcrReviewFormValues,
 } from "@/types/ocr";
+import type {
+  OcrRegionApiRequest,
+  OcrRegionApiResponse,
+  OcrRegionRequestPayload,
+  OcrRegionResult,
+} from "@/types/ocrRegion";
 
 function normalizeNumber(rawValue: string | number | null): number | null {
   if (rawValue === null) {
@@ -85,6 +91,30 @@ function mapOcrReviewFormValues(ocrReviewFormValues: OcrReviewFormValues) {
   };
 }
 
+function mapOcrRegionRequest(regionRequestPayload: OcrRegionRequestPayload): OcrRegionApiRequest {
+  return {
+    x: regionRequestPayload.x,
+    y: regionRequestPayload.y,
+    width: regionRequestPayload.width,
+    height: regionRequestPayload.height,
+    display_width: regionRequestPayload.displayWidth,
+    display_height: regionRequestPayload.displayHeight,
+    page: regionRequestPayload.page,
+  };
+}
+
+function mapOcrRegionResult(ocrRegionResponse: OcrRegionApiResponse): OcrRegionResult {
+  return {
+    success: ocrRegionResponse.success,
+    text: ocrRegionResponse.text,
+    rawJson: ocrRegionResponse.raw_json,
+    confidenceScore:
+      ocrRegionResponse.confidence_score === null
+        ? null
+        : Number(ocrRegionResponse.confidence_score),
+  };
+}
+
 export async function runDocumentOcr(documentId: string): Promise<OcrResult> {
   const ocrResponse = await apiClient.post<OcrResultApiResponse>(`/documents/${documentId}/ocr`);
 
@@ -117,4 +147,17 @@ export async function approveDocumentOcrResult(documentId: string): Promise<OcrR
   );
 
   return mapOcrResult(ocrResponse.data);
+}
+
+export async function runDocumentRegionOcr(
+  documentId: string,
+  regionRequestPayload: OcrRegionRequestPayload,
+): Promise<OcrRegionResult> {
+  const ocrResponse = await apiClient.post<OcrRegionApiResponse>(
+    `/documents/${documentId}/ocr-region`,
+    mapOcrRegionRequest(regionRequestPayload),
+    { timeout: 60000 },
+  );
+
+  return mapOcrRegionResult(ocrResponse.data);
 }
